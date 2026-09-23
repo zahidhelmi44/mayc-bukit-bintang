@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import KadAcara from '../components/KadAcara.astro';
+import KadArtikel from '../components/KadArtikel.astro';
+import tetapan from '../data/tetapan.json';
+import acara from '../data/acara.json';
+import { semuaArtikel, pautanArtikel } from '../lib/util';
+
+const artikel = await semuaArtikel();
+const [utama, ...lain] = artikel;
+const sisi = lain.slice(0, 3);
+
+const sorotan = artikel.flatMap((a) =>
+  [a.data.cover, ...a.data.galeri].filter(Boolean).map((src) => ({ src: src as string, tajuk: a.data.title, href: pautanArtikel(a) }))
+);
+
+const teras = ['Sivik', 'Sukan', 'Rekreasi', 'Kesenian'];
+
+const wa = tetapan.whatsapp ? `https://wa.me/${tetapan.whatsapp.replace(/\D/g, '')}` : '';
+const sosial = [
+  tetapan.instagram && { label: 'Instagram', href: `https://www.instagram.com/${tetapan.instagram}/` },
+  tetapan.facebook && { label: 'Facebook', href: tetapan.facebook.startsWith('http') ? tetapan.facebook : `https://www.facebook.com/${tetapan.facebook}` },
+  tetapan.tiktok && { label: 'TikTok', href: `https://www.tiktok.com/@${tetapan.tiktok.replace('@', '')}` },
+].filter(Boolean) as { label: string; href: string }[];
+---
+<Base halaman="">
+  <section class="hero">
+    <div class="bekas hero-grid">
+      <div class="hero-teks">
+        <span class="hero-label">{tetapan.namaPenuh}</span>
+        <h1>
+          <span class="baris baris-1">Menyatukan </span>
+          <span class="baris">belia</span>
+          <span class="baris"><span class="serif">sejak</span> <span class="tahun">1954.</span></span>
+        </h1>
+        {tetapan.pengenalan && <p class="hero-pengenalan">{tetapan.pengenalan}</p>}
+        <div class="hero-butang">
+          <a class="btn btn-krim" href="#tentang">Kenali kami <span class="bulat" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10"/><path d="M4 9l4 4 4-4"/></svg></span></a>
+          <a class="btn btn-garis" href="/sejarah/">Sejarah MAYC</a>
+        </div>
+      </div>
+      {acara.aktif && <KadAcara />}
+    </div>
+  </section>
+
+  <section class="seksyen" id="tentang">
+    <div class="bekas tentang-grid">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <h2>Empat <span class="serif">teras</span> belia</h2>
+        <p style="margin:0;color:var(--kelabu-2);max-width:34ch">Sejak 1954, MAYC menyatukan belia supaya tenaga mereka digembleng dalam sivik, sukan, rekreasi dan kesenian.</p>
+        <a class="pautan-garis" href="/sejarah/" style="align-self:flex-start">Baca sejarah MAYC</a>
+      </div>
+      <div class="teras">
+        {teras.map((t) => <div><b>{t}</b></div>)}
+      </div>
+    </div>
+  </section>
+
+  {utama && (
+    <section class="seksyen" id="artikel">
+      <div class="bekas">
+        <div class="seksyen-kepala">
+          <h2>Artikel <span class="serif">&amp; isu semasa</span></h2>
+          <a class="pautan-garis" href="/artikel/">Semua artikel</a>
+        </div>
+        <div class="artikel-grid">
+          <KadArtikel a={utama} jenis="utama" />
+          {sisi.length > 0 && <div class="senarai-kecil">{sisi.map((a) => <KadArtikel a={a} />)}</div>}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {sorotan.length >= 3 && (
+    <section class="sorotan" aria-labelledby="tajuk-sorotan">
+      <div class="seksyen-kepala">
+        <h2 id="tajuk-sorotan" style="margin:0;font-size:clamp(34px,6vw,52px);letter-spacing:-0.035em;line-height:1">Sorotan</h2>
+        <span class="label gelap">Leret untuk lihat</span>
+      </div>
+      <div class="jalur">
+        {sorotan.map((s) => <a href={s.href}><img src={s.src} alt="" loading="lazy" /><span>{s.tajuk}</span></a>)}
+      </div>
+    </section>
+  )}
+
+  <section class="seksyen" id="hubungi">
+    <div class="bekas hubungi">
+      <h2>Jom <span class="serif">berhubung.</span></h2>
+      <div class="hubungi-butang">
+        {wa && <a class="btn btn-dakwat" href={wa}><span>WhatsApp</span><span class="kecil">{tetapan.whatsapp}</span></a>}
+        {tetapan.emel && <a class="btn btn-garis-terang" href={`mailto:${tetapan.emel}`}><span>E-mel</span><span class="kecil" style="color:var(--kelabu)">{tetapan.emel}</span></a>}
+        {sosial.map((s, i) => <a class={i === 0 && !wa ? 'btn btn-dakwat' : 'btn btn-garis-terang'} href={s.href}><span>{s.label}</span>{s.label === 'Instagram' && <span class="kecil">@{tetapan.instagram}</span>}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>

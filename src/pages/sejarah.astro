@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+const tahunKini = new Date().getFullYear();
+const peristiwa = [
+  { tahun: '1954', utama: true, tajuk: 'Penubuhan sebagai Persatuan Pemuda Pemudi Malaya', isi: 'Struktur awal diambil daripada National Association of Youth Clubs (NAYC) di United Kingdom. Tan Sri Mubin Sheppard menjadi Presiden pertama.' },
+  { tahun: '1956', tajuk: 'Mesyuarat Agung pertama dan pendaftaran rasmi', isi: 'Mesyuarat Agung pertama di Rumah Persekutuan, Kuala Lumpur dihadiri 17 kelab gabungan. Pendaftaran diluluskan pada 19 Oktober 1956. Tunku Abdullah menjadi Presiden kedua, dan MAYC menyertai Persidangan Belia Sedunia (WAY) di Berlin.' },
+  { tahun: '1960', tajuk: 'Jaringan antarabangsa dan Pingat Jasa Cemerlang', isi: 'Kerjasama dengan persatuan di Jepun, Amerika, India, Australia, England dan Asia Tenggara. Pingat Jasa Cemerlang (JC) diperkenalkan.' },
+  { tahun: '1970', tajuk: 'Wisma Belia dirasmikan', isi: 'Dibina di atas tanah kurniaan Sultan Selangor di Jalan Syed Putra, dan dirasmikan pada 27 Ogos 1970 oleh Tun Abdul Razak.' },
+  { tahun: '1973', utama: true, tajuk: 'Era Tan Sri Sanusi Junid (1973–2000)', isi: 'Presiden keempat yang memperkenalkan falsafah MENJARO dan POLEMAS.' },
+  { tahun: '1986', tajuk: 'Kompleks MAYC', isi: 'Wisma Tunku dibina, dan Kompleks MAYC dirasmikan pada 10 Ogos 1986 oleh Tun Dr. Mahathir Mohamad.' },
+  { tahun: '2000', tajuk: 'Tan Sri Syed Hamid Albar', isi: 'Presiden kelima (2000–2010).' },
+  { tahun: '2007', tajuk: 'Era Akta Belia', isi: 'Akta Belia diperkenalkan dan mensyaratkan ahli berumur di bawah 40 tahun.' },
+  { tahun: '2012', utama: true, tajuk: 'Presiden ketujuh', isi: 'Sdr. Mohd Hasri Mohd Hadzir dilantik pada Mesyuarat Agung kali ke-53, meneruskan semangat kenegaraan dalam program MAYC.' },
+];
+---
+<Base title="Sejarah MAYC" description="Sejarah Persatuan Kelab-kelab Belia Malaysia (MAYC) sejak 1954." halaman="sejarah">
+  <section class="sej-hero">
+    <div class="bekas">
+      <span class="hero-label">Sejarah MAYC</span>
+      <h1><span class="serif">Sejak</span><b>1954</b></h1>
+      <p>Persatuan Kelab-kelab Belia Malaysia (MAYC) ditubuhkan untuk menyatukan belia supaya tenaga mereka digembleng dalam kegiatan pelajaran sivik, sukan, rekreasi dan kesenian.</p>
+    </div>
+  </section>
+  <div class="bekas">
+    <div class="angka">
+      <div><b>{tahunKini - 1954}</b><span>Tahun bersama belia</span></div>
+      <div><b>17</b><span>Kelab pada Mesyuarat Agung pertama</span></div>
+      <div><b>1062</b><span>No. sijil pendaftaran (Selangor)</span></div>
+    </div>
+  </div>
+  <section class="seksyen">
+    <div class="bekas">
+      <h2 style="margin-bottom:28px">Garis <span class="serif">masa</span></h2>
+      <ol class="garis-masa">
+        {peristiwa.map((p) => (
+          <li class={p.utama ? 'utama' : ''}>
+            <span class="tiang" aria-hidden="true"></span>
+            <div class="isi"><span class="tahun">{p.tahun}</span><h3>{p.tajuk}</h3><p>{p.isi}</p></div>
+          </li>
+        ))}
+      </ol>
+      <div class="falsafah">
+        <span class="label gelap">Falsafah yang diwarisi</span>
+        <div><b>MENJARO</b><p>Mental, jasad dan rohaniah — asas kekuatan diri setiap ahli.</p></div>
+        <hr />
+        <div><b>POLEMAS</b><p>Politik, ekonomi dan masyarakat — medan yang disediakan untuk belia menceburi.</p></div>
+        <p class="serif" style="font-size:28px;line-height:1.15;color:var(--kertas);margin:6px 0 0">“Buang yang keruh, ambil yang jernih.”</p>
+      </div>
+    </div>
+  </section>
+</Base>
