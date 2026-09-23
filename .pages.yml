@@ -1,0 +1,163 @@
+# Konfigurasi panel pengurusan kandungan (Pages CMS) — https://app.pagescms.org
+media:
+  input: public/uploads
+  output: /uploads
+  rename: safe
+  categories: [image]
+
+content:
+  - name: artikel
+    label: Artikel
+    type: collection
+    path: src/content/artikel
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, date, category, draft]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Tajuk
+        type: string
+        required: true
+      - name: date
+        label: Tarikh terbit
+        type: date
+        default: ""
+        description: Kosongkan jika tiada tarikh. Artikel tanpa tarikh disusun di bawah.
+        options:
+          format: yyyy-MM-dd
+      - name: category
+        label: Kategori
+        type: select
+        required: true
+        options:
+          values: [Program, Inisiatif, Kerjasama, Kenyataan Pengerusi, Khidmat Masyarakat, Isu Semasa]
+      - name: author
+        label: Nama penulis
+        type: string
+        default: Zahid Helmi
+      - name: authorRole
+        label: Jawatan penulis
+        type: string
+        description: Contoh "Pengerusi MAYC Bukit Bintang". Boleh dikosongkan.
+      - name: cover
+        label: Gambar utama
+        type: image
+      - name: coverAlt
+        label: Keterangan gambar utama
+        type: string
+        description: Ayat pendek tentang gambar. Dipaparkan di bawah gambar dan dibaca oleh pembaca skrin.
+      - name: ringkasan
+        label: Ringkasan (maksimum 3 poin)
+        type: string
+        list:
+          max: 3
+      - name: video
+        label: Pautan video
+        type: string
+        description: Tampal pautan Instagram Reel, YouTube atau TikTok. Kosongkan jika tiada.
+      - name: galeri
+        label: Galeri foto tambahan
+        type: image
+        options:
+          multiple:
+            max: 12
+      - name: tags
+        label: Tag (tanpa #)
+        type: string
+        list: true
+      - name: featured
+        label: Jadikan artikel utama di halaman utama
+        type: boolean
+        default: false
+      - name: draft
+        label: Draf (jangan terbitkan lagi)
+        type: boolean
+        default: false
+      - name: body
+        label: Isi artikel
+        type: rich-text
+        options:
+          format: markdown
+
+  - name: acara
+    label: Acara semasa
+    type: file
+    path: src/data/acara.json
+    format: json
+    fields:
+      - name: aktif
+        label: Paparkan kad acara di halaman utama
+        type: boolean
+      - name: nama
+        label: Nama acara
+        type: string
+        required: true
+      - name: logo
+        label: Logo acara
+        type: image
+      - name: keterangan
+        label: Keterangan ringkas
+        type: text
+      - name: mula
+        label: Mula (waktu Malaysia)
+        type: date
+        options:
+          time: true
+          format: yyyy-MM-dd'T'HH:mm
+      - name: tamat
+        label: Tamat (waktu Malaysia)
+        type: date
+        options:
+          time: true
+          format: yyyy-MM-dd'T'HH:mm
+      - name: lokasi
+        label: Lokasi
+        type: string
+      - name: pautanKeputusan
+        label: Pautan keputusan
+        type: string
+      - name: pautanInfo
+        label: Pautan info acara
+        type: string
+        description: Contoh /artikel/nama-artikel/ atau pautan penuh.
+
+  - name: tetapan
+    label: Tetapan laman
+    type: file
+    path: src/data/tetapan.json
+    format: json
+    fields:
+      - name: namaCawangan
+        label: Nama ringkas
+        type: string
+      - name: namaPenuh
+        label: Nama penuh
+        type: string
+      - name: pengenalan
+        label: Pengenalan cawangan (hero halaman utama)
+        type: text
+        description: Kosongkan untuk sembunyikan.
+      - name: whatsapp
+        label: Nombor WhatsApp
+        type: string
+        description: Format 60123456789. Kosongkan untuk sembunyikan butang.
+      - name: emel
+        label: E-mel
+        type: string
+      - name: instagram
+        label: Instagram (nama pengguna tanpa @)
+        type: string
+      - name: facebook
+        label: Facebook (nama halaman atau pautan penuh)
+        type: string
+      - name: tiktok
+        label: TikTok (nama pengguna)
+        type: string
+      - name: penulisLalai
+        label: Penulis lalai
+        type: string
