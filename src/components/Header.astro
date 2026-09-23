@@ -1,0 +1,58 @@
+---
+import acara from '../data/acara.json';
+interface Props { halaman?: string }
+const { halaman = '' } = Astro.props;
+const menu = [
+  { href: '/#tentang', label: 'Tentang', id: 'tentang' },
+  { href: '/#acara', label: 'Acara', id: 'acara' },
+  { href: '/artikel/', label: 'Artikel', id: 'artikel' },
+  { href: '/sejarah/', label: 'Sejarah', id: 'sejarah' },
+  { href: '/#hubungi', label: 'Hubungi', id: 'hubungi' },
+];
+---
+<header class="header">
+  <div class="bekas header-dalam">
+    <a class="jenama" href="/" aria-label="MAYC Bukit Bintang, halaman utama">
+      <img src="/brand/mayc-bukit-bintang-logo.png" alt="" width="200" height="198" />
+      <span class="jenama-teks"><b>MAYC</b><span>BUKIT BINTANG</span></span>
+    </a>
+    <nav class="nav" aria-label="Menu utama">
+      {menu.map((m) => <a href={m.href} aria-current={halaman === m.id ? 'page' : undefined}>{m.label}</a>)}
+    </nav>
+    <div class="header-kanan">
+      {acara.aktif && (
+        <a class="pil-acara" href={acara.pautanKeputusan} data-pil-acara>
+          <span class="titik"></span>
+          <span data-teks-pil>{acara.nama}</span>
+          <span class="bulat" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L12 4"/><path d="M5.5 4H12v6.5"/></svg></span>
+        </a>
+      )}
+      <button class="btn-menu" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="menu-penuh" data-buka-menu>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#F4EFE6" stroke-width="1.6" stroke-linecap="round"><path d="M3 7h14"/><path d="M3 13h9"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="menu-penuh" id="menu-penuh" role="dialog" aria-modal="true" aria-label="Menu" data-menu>
+  <div class="menu-atas">
+    <a class="jenama" href="/"><img src="/brand/mayc-bukit-bintang-logo.png" alt="Logo MAYC Bukit Bintang" width="200" height="198" /></a>
+    <button class="btn-menu" type="button" aria-label="Tutup menu" data-tutup-menu style="display:grid">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#F4EFE6" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8"/><path d="M12 4L4 12"/></svg>
+    </button>
+  </div>
+  <ul class="menu-senarai">
+    {menu.map((m) => <li><a href={m.href} data-tutup-menu>{m.label}</a></li>)}
+  </ul>
+</div>
+<script>
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const buka = document.querySelector<HTMLButtonElement>('[data-buka-menu]');
+  const set = (b: boolean) => {
+    menu?.classList.toggle('buka', b);
+    buka?.setAttribute('aria-expanded', String(b));
+    document.body.style.overflow = b ? 'hidden' : '';
+  };
+  buka?.addEventListener('click', () => set(true));
+  document.querySelectorAll('[data-tutup-menu]').forEach((el) => el.addEventListener('click', () => set(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+</script>

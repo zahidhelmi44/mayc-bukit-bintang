@@ -1,0 +1,13 @@
+---
+import tetapan from '../data/tetapan.json';
+const tahun = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="bekas footer-dalam">
+    <span style="display:flex;align-items:center;gap:12px">
+      <img src="/brand/mayc-bukit-bintang-logo.png" alt="" width="200" height="198" />
+      <span class="label">© {tahun} {tetapan.namaCawangan}</span>
+    </span>
+    {tetapan.instagram && <a class="label" href={`https://www.instagram.com/${tetapan.instagram}/`}>Instagram @{tetapan.instagram}</a>}
+  </div>
+</footer>

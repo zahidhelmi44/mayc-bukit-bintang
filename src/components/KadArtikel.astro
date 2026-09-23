@@ -1,0 +1,30 @@
+---
+import type { Artikel } from '../lib/util';
+import { tarikhPendek, minitBacaan, pautanArtikel } from '../lib/util';
+interface Props { a: Artikel; jenis?: 'utama' | 'kecil' }
+const { a, jenis = 'kecil' } = Astro.props;
+const d = a.data;
+const meta = [d.date ? tarikhPendek(d.date) : '', `${minitBacaan(a.body ?? '')} min bacaan`, d.video ? 'Video' : ''].filter(Boolean).join(' · ');
+const vt = `gambar-${a.id}`;
+---
+{jenis === 'utama' ? (
+  <a class="kad-utama" href={pautanArtikel(a)}>
+    <div class={d.cover ? 'gambar' : 'gambar gambar-ganti'} style={`view-transition-name:${vt}`}>
+      {d.cover ? <img src={d.cover} alt={d.coverAlt ?? ''} loading="lazy" /> : <img src="/brand/mayc-bukit-bintang-logo.png" alt="" />}
+      <span class="lencana">{d.category}</span>
+    </div>
+    <h3>{d.title}</h3>
+    <span class="meta">{meta}</span>
+  </a>
+) : (
+  <a class="kad-kecil" href={pautanArtikel(a)}>
+    <div class={d.cover ? 'gambar' : 'gambar gambar-ganti'} style={`view-transition-name:${vt}`}>
+      {d.cover ? <img src={d.cover} alt="" loading="lazy" /> : <img src="/brand/mayc-bukit-bintang-logo.png" alt="" />}
+    </div>
+    <div class="isi">
+      <span class="label">{d.category}</span>
+      <h3>{d.title}</h3>
+      <span class="meta">{meta}</span>
+    </div>
+  </a>
+)}

@@ -1,0 +1,45 @@
+---
+import acara from '../data/acara.json';
+import { semuaArtikel, pautanArtikel } from '../lib/util';
+const terkini = (await semuaArtikel())[0];
+const BULAN = ['JAN', 'FEB', 'MAC', 'APR', 'MEI', 'JUN', 'JUL', 'OGO', 'SEP', 'OKT', 'NOV', 'DIS'];
+const HARI = ['AHAD', 'ISNIN', 'SELASA', 'RABU', 'KHAMIS', 'JUMAAT', 'SABTU'];
+const [tkh, masa = '00:00'] = acara.mula.split('T');
+const [y, mo, d] = tkh.split('-').map(Number);
+const hari = HARI[new Date(Date.UTC(y, mo - 1, d)).getUTCDay()];
+const jam12 = (hhmm: string) => {
+  const [h, m] = hhmm.split(':').map(Number);
+  const hh = ((h + 11) % 12) + 1;
+  const label = h < 12 ? 'PG' : h < 19 ? 'PTG' : 'MLM';
+  return `${hh}.${String(m).padStart(2, '0')} ${label}`;
+};
+const masaTamat = acara.tamat.split('T')[1] ?? '';
+---
+{acara.aktif && (
+  <div class="kad-acara" id="acara" data-acara data-fasa="sebelum">
+    <div class="kad-acara-atas">
+      <div class="kad-acara-status">
+        <span class="status" data-status>Acara seterusnya</span>
+        <span class="kad-acara-tarikh">{d} {BULAN[mo - 1]} {y} · {hari}</span>
+      </div>
+      <img class="kad-acara-logo" src={acara.logo} alt={acara.nama} width="900" height="334" />
+      {acara.keterangan && <p class="kad-acara-ket">{acara.keterangan}</p>}
+      <span class="kad-acara-lokasi">{jam12(masa)}{masaTamat && ` – ${jam12(masaTamat)}`}<br />{acara.lokasi.toUpperCase()}</span>
+      <div class="kiraan hanya-sebelum" role="timer" aria-label="Masa sebelum acara bermula">
+        <div><b data-hari>00</b><span>HARI</span></div>
+        <div><b data-jam>00</b><span>JAM</span></div>
+        <div><b data-minit>00</b><span>MINIT</span></div>
+        <div><b data-saat>00</b><span>SAAT</span></div>
+      </div>
+      <p class="langsung hanya-berlangsung">Perlumbaan sedang berjalan. Keputusan dikemas kini secara langsung.</p>
+      <a class="btn btn-emas" href={acara.pautanKeputusan} data-cta>
+        <span data-cta-label>Lihat keputusan</span>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12L12 4"/><path d="M5.5 4H12v6.5"/></svg>
+      </a>
+    </div>
+    <div class="kad-acara-bawah">
+      <a href={acara.pautanInfo} class="bukan-selepas"><span class="label gelap">Info acara</span><span class="isi">Jadual, lokasi &amp; hadiah</span></a>
+      {terkini && <a href={pautanArtikel(terkini)}><span class="label gelap">Terkini</span><span class="isi">{terkini.data.title}</span></a>}
+    </div>
+  </div>
+)}
