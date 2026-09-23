@@ -1,0 +1,109 @@
+---
+import Base from '../../layouts/Base.astro';
+import KadArtikel from '../../components/KadArtikel.astro';
+import { render } from 'astro:content';
+import { semuaArtikel, tarikhPenuh, minitBacaan, inisial, jenisVideo, pautanArtikel, type Artikel } from '../../lib/util';
+
+export async function getStaticPaths() {
+  const semua = await semuaArtikel();
+  return semua.map((a, i) => ({ params: { slug: a.id }, props: { a, seterusnya: semua[(i + 1) % semua.length] } }));
+}
+interface Props { a: Artikel; seterusnya: Artikel }
+const { a, seterusnya } = Astro.props;
+const { Content } = await render(a);
+const d = a.data;
+const video = jenisVideo(d.video);
+const kenyataan = d.category.toLowerCase().includes('kenyataan');
+const minit = minitBacaan(a.body ?? '');
+const url = new URL(pautanArtikel(a), Astro.site).toString();
+const huraian = d.ringkasan[0] ?? (a.body ?? '').split('\n').find((l) => l.trim() && !l.startsWith('>'))?.slice(0, 180) ?? '';
+const teksKongsi = encodeURIComponent(`${d.title}\n${url}`);
+const labelAtas = [d.category, d.date ? tarikhPenuh(d.date) : ''].filter(Boolean).join(' — ');
+---
+<Base title={d.title} description={huraian} image={d.cover} type="article" halaman="artikel">
+  <div class="kemajuan" aria-hidden="true"><span data-kemajuan></span></div>
+  <article>
+    <header class="art-kepala">
+      {kenyataan ? <span class="lencana-kenyataan">{d.category}</span> : <span class="label">{labelAtas}</span>}
+      {kenyataan && d.date && <span class="label">{tarikhPenuh(d.date)}</span>}
+      <h1>{d.title}</h1>
+      {d.author && (
+        <div class="penulis">
+          <span class="av" aria-hidden="true">{inisial(d.author)}</span>
+          <span class="nama">{d.author}<small>{[d.authorRole, `${minit} min bacaan`, video ? 'Video' : ''].filter(Boolean).join(' · ')}</small></span>
+        </div>
+      )}
+    </header>
+
+    {d.cover && (
+      <figure class="art-gambar" style={`margin:0 auto;view-transition-name:gambar-${a.id}`}>
+        <img src={d.cover} alt={d.coverAlt ?? ''} />
+        {d.coverAlt && <figcaption>{d.coverAlt}</figcaption>}
+      </figure>
+    )}
+    {d.galeri.length > 0 && (
+      <div class="art-galeri" aria-label="Galeri foto">
+        {d.galeri.map((g) => <img src={g} alt="" loading="lazy" />)}
+      </div>
+    )}
+
+    {video && (
+      <div class="art-badan video">
+        {video.jenis === 'instagram' && (
+          <div class="reel">
+            <blockquote class="instagram-media" data-instgrm-permalink={video.url} data-instgrm-version="14" style="background:#fff;border:0;border-radius:16px;margin:0;max-width:540px;min-width:0;padding:0;width:100%">
+              <a href={video.url} style="display:block;padding:24px;text-align:center;font-weight:600">Tonton video di Instagram</a>
+            </blockquote>
+          </div>
+        )}
+        {video.jenis === 'youtube' && <iframe src={`https://www.youtube-nocookie.com/embed/${video.id}`} title={d.title} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>}
+        {(video.jenis === 'tiktok' || video.jenis === 'lain') && <a class="btn btn-dakwat" href={video.url}>Tonton video</a>}
+        {video.jenis === 'instagram' && <a class="pautan-garis" href={video.url}>Buka di Instagram</a>}
+      </div>
+    )}
+
+    <div class="art-badan">
+      {d.ringkasan.length > 0 && (
+        <section class="ringkasan" aria-labelledby="tajuk-ringkasan">
+          <h2 id="tajuk-ringkasan">Ringkasan</h2>
+          <ol>{d.ringkasan.map((r) => <li>{r}</li>)}</ol>
+          <a href="#isi">Baca penuh <span aria-hidden="true">↓</span></a>
+        </section>
+      )}
+      <div class="prosa" id="isi" data-prosa>
+        <Content />
+      </div>
+      {d.tags.length > 0 && <ul class="tag">{d.tags.map((t) => <li>#{t}</li>)}</ul>}
+    </div>
+  </article>
+
+  <section class="kongsi" aria-label="Kongsi artikel">
+    <span class="label">Kongsi artikel ini</span>
+    <a class="btn btn-dakwat" href={`https://wa.me/?text=${teksKongsi}`} target="_blank" rel="noopener">Kongsi ke WhatsApp</a>
+    <div class="dua">
+      <a class="btn btn-garis-terang" href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(d.title)}`} target="_blank" rel="noopener">Telegram</a>
+      <button class="btn btn-garis-terang" type="button" data-salin={url} style="background:transparent">Salin pautan</button>
+    </div>
+  </section>
+
+  {seterusnya && seterusnya.id !== a.id && (
+    <section class="baca-lagi">
+      <h2>Baca seterusnya</h2>
+      <div class="senarai-kecil"><KadArtikel a={seterusnya} /></div>
+    </section>
+  )}
+
+  <div class="alat-pilih" data-alat-pilih role="toolbar" aria-label="Kongsi petikan">
+    <button type="button" data-kongsi-gambar>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#E8B04B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2" width="11" height="12" rx="2"/><path d="M5 10l2-2.5 2 2 2-3"/></svg>
+      Kongsi sebagai gambar
+    </button>
+    <span class="pemisah"></span>
+    <button type="button" data-salin-petikan>Salin</button>
+  </div>
+  <div class="toast" data-toast role="status" aria-live="polite"></div>
+
+  <script type="application/json" id="data-artikel" set:html={JSON.stringify({ tajuk: d.title, kategori: d.category, tarikh: d.date ? tarikhPenuh(d.date) : '', url })}></script>
+  {video?.jenis === 'instagram' && <script async src="https://www.instagram.com/embed.js" is:inline></script>}
+  <script src="../../scripts/artikel.ts"></script>
+</Base>

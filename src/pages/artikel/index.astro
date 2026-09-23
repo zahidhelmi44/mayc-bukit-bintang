@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import KadArtikel from '../../components/KadArtikel.astro';
+import { semuaArtikel } from '../../lib/util';
+const artikel = await semuaArtikel();
+const kategori = [...new Set(artikel.map((a) => a.data.category))];
+---
+<Base title="Artikel & isu semasa" description="Artikel, kenyataan dan laporan program MAYC Bukit Bintang." halaman="artikel">
+  <section class="seksyen" style="padding-top:36px">
+    <div class="bekas">
+      <div class="seksyen-kepala"><h1 style="margin:0;font-size:clamp(40px,8vw,72px);letter-spacing:-0.04em;line-height:.95">Artikel <span class="serif">&amp; isu semasa</span></h1></div>
+      {kategori.length > 1 && (
+        <div class="penapis" role="group" aria-label="Tapis mengikut kategori">
+          <button type="button" aria-pressed="true" data-tapis="">Semua</button>
+          {kategori.map((k) => <button type="button" aria-pressed="false" data-tapis={k}>{k}</button>)}
+        </div>
+      )}
+      <div class="senarai-kecil" style="max-width:820px">
+        {artikel.map((a) => <div data-kategori={a.data.category}><KadArtikel a={a} /></div>)}
+      </div>
+    </div>
+  </section>
+  <script>
+    const butang = document.querySelectorAll<HTMLButtonElement>('[data-tapis]');
+    butang.forEach((b) => b.addEventListener('click', () => {
+      butang.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelectorAll<HTMLElement>('[data-kategori]').forEach((el) => {
+        el.hidden = !!b.dataset.tapis && el.dataset.kategori !== b.dataset.tapis;
+      });
+    }));
+  </script>
+</Base>
