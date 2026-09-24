@@ -121,6 +121,9 @@ content:
       - name: pautanKeputusan
         label: Pautan keputusan
         type: string
+      - name: pautanRider
+        label: Pautan senarai rider
+        type: string
       - name: pautanInfo
         label: Pautan info acara
         type: string

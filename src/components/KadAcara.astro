@@ -32,12 +32,13 @@ const masaTamat = acara.tamat.split('T')[1] ?? '';
         <div><b data-saat>00</b><span>SAAT</span></div>
       </div>
       <p class="langsung hanya-berlangsung">Perlumbaan sedang berjalan. Keputusan dikemas kini secara langsung.</p>
-      <a class="btn btn-emas" href={acara.pautanKeputusan} data-cta>
-        <span data-cta-label>Lihat keputusan</span>
+      <a class="btn btn-emas" href={acara.pautanRider || acara.pautanKeputusan} data-cta>
+        <span data-cta-label>Lihat senarai rider</span>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12L12 4"/><path d="M5.5 4H12v6.5"/></svg>
       </a>
     </div>
     <div class="kad-acara-bawah">
+      <a href="#" class="hanya-sebelum" data-kalendar><span class="label gelap">Tarikh acara</span><span class="isi">Tambah ke kalendar</span></a>
       <a href={acara.pautanInfo} class="bukan-selepas"><span class="label gelap">Info acara</span><span class="isi">Jadual, lokasi &amp; hadiah</span></a>
       {terkini && <a href={pautanArtikel(terkini)}><span class="label gelap">Terkini</span><span class="isi">{terkini.data.title}</span></a>}
     </div>

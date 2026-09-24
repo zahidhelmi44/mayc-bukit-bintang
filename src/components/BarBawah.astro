@@ -4,6 +4,6 @@ import acara from '../data/acara.json';
 {acara.aktif && (
   <div class="bar-bawah" data-bar-bawah data-acara-mini>
     <span class="teks"><b>{acara.nama}</b><small data-teks-bar>&nbsp;</small></span>
-    <a class="btn btn-emas" href={acara.pautanInfo} data-cta-bar>Info</a>
+    <a class="btn btn-emas" href={acara.pautanRider || acara.pautanKeputusan} data-cta-bar>Rider</a>
   </div>
 )}

@@ -1,5 +1,5 @@
 // Status acara & countdown. Masa dalam acara.json ditulis sebagai waktu Malaysia (UTC+8).
-type Acara = { nama: string; mula: string; tamat: string; lokasi: string; pautanKeputusan: string; pautanInfo: string; keterangan?: string };
+type Acara = { nama: string; mula: string; tamat: string; lokasi: string; pautanKeputusan: string; pautanRider?: string; pautanInfo: string; keterangan?: string };
 
 const el = document.getElementById('data-acara');
 if (el) {
@@ -12,6 +12,7 @@ if (el) {
   };
   const mula = keMasa(acara.mula);
   const tamat = keMasa(acara.tamat);
+  const pautanRider = acara.pautanRider || acara.pautanKeputusan;
   const p = (n: number) => String(n).padStart(2, '0');
 
   const fasaSekarang = () => {
@@ -35,7 +36,7 @@ if (el) {
       const cta = kad.querySelector<HTMLAnchorElement>('[data-cta]');
       if (cta) {
         const label = cta.querySelector('[data-cta-label]');
-        if (fasa === 'sebelum') { cta.href = '#'; cta.dataset.kalendar = '1'; if (label) label.textContent = 'Tambah ke kalendar'; }
+        if (fasa === 'sebelum') { cta.href = pautanRider; if (label) label.textContent = 'Lihat senarai rider'; }
         else { cta.href = acara.pautanKeputusan; delete cta.dataset.kalendar; if (label) label.textContent = fasa === 'berlangsung' ? 'Keputusan langsung' : 'Lihat keputusan'; }
       }
     });
@@ -46,7 +47,7 @@ if (el) {
     const teksBar = document.querySelector('[data-teks-bar]');
     const ctaBar = document.querySelector<HTMLAnchorElement>('[data-cta-bar]');
     if (teksBar) teksBar.textContent = fasa === 'sebelum' ? (h > 0 ? `${h} hari ${j} jam lagi` : `${j} jam ${m} minit lagi`) : fasa === 'berlangsung' ? 'Sedang berlangsung' : 'Keputusan kini tersedia';
-    if (ctaBar) { ctaBar.textContent = fasa === 'sebelum' ? 'Info' : 'Keputusan'; ctaBar.href = fasa === 'sebelum' ? acara.pautanInfo : acara.pautanKeputusan; }
+    if (ctaBar) { ctaBar.textContent = fasa === 'sebelum' ? 'Rider' : 'Keputusan'; ctaBar.href = fasa === 'sebelum' ? pautanRider : acara.pautanKeputusan; }
   };
   kemas();
   setInterval(kemas, 1000);
