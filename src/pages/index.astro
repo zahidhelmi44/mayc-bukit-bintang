@@ -34,14 +34,46 @@ const sosial = [
           <span class="baris"><span class="serif">sejak</span> <span class="tahun">1954.</span></span>
         </h1>
         {tetapan.pengenalan && <p class="hero-pengenalan">{tetapan.pengenalan}</p>}
+        <div class="hero-teras" aria-label="Empat teras MAYC">
+          {teras.map((t) => <span>{t}</span>)}
+        </div>
         <div class="hero-butang">
           <a class="btn btn-krim" href="#tentang">Kenali kami <span class="bulat" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v10"/><path d="M4 9l4 4 4-4"/></svg></span></a>
           <a class="btn btn-garis" href="/sejarah/">Sejarah MAYC</a>
         </div>
       </div>
-      {acara.aktif && <KadAcara />}
+
+      <div class="hero-visual">
+        <div class="hero-media">
+          <video autoplay muted loop playsinline preload="metadata" poster="/brand/og-default.jpg" aria-label="Sorotan aktiviti MAYC Bukit Bintang">
+            <source src="/uploads/mayc-hero-loop.mp4" type="video/mp4" />
+          </video>
+          <div class="hero-media-label">
+            <span>Aktiviti belia</span>
+            <b>Di lapangan, bersama komuniti.</b>
+          </div>
+        </div>
+        <div class="hero-stat" aria-label="Ringkasan MAYC Bukit Bintang">
+          <div><b>1954</b><span>Sejak</span></div>
+          <div><b>4</b><span>Teras utama</span></div>
+          <div><b>Bukit Bintang</b><span>Komuniti</span></div>
+        </div>
+      </div>
     </div>
   </section>
+
+  {acara.aktif && (
+    <section class="seksyen acara-semasa">
+      <div class="bekas acara-shell">
+        <div class="acara-pengenalan">
+          <span class="label">Acara semasa</span>
+          <h2>Satu aktiviti. <span class="serif">Banyak ruang untuk belia.</span></h2>
+          <p>MAYC Bukit Bintang bergerak merentas sivik, sukan, rekreasi dan kesenian. Acara di sebelah ialah salah satu program yang sedang kami gerakkan.</p>
+        </div>
+        <KadAcara />
+      </div>
+    </section>
+  )}
 
   <section class="seksyen" id="tentang">
     <div class="bekas tentang-grid">
