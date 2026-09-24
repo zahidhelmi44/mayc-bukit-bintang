@@ -1,0 +1,222 @@
+:root {
+  --kertas: #F5F9FF;
+  --kertas-kad: #FFFFFF;
+  --dakwat: #082C5C;
+  --dakwat-2: #0B3A77;
+  --dakwat-3: #124A8E;
+  --garis: #D2E0F2;
+  --garis-gelap: #2A5D9D;
+  --kelabu: #63748C;
+  --kelabu-2: #40536E;
+  --kelabu-gelap: #B8CBE3;
+  --krim-lembut: #E2ECF8;
+  --emas: #F4C542;
+  --emas-teks: #8A6410;
+  --merah: #E5533D;
+  --sorot: #DCEBFF;
+  --biru: #0B4EAA;
+  --biru-cerah: #176DCE;
+  --biru-pucat: #EAF3FF;
+}
+
+body {
+  background: linear-gradient(180deg, #F8FBFF 0%, #F4F8FF 100%);
+}
+
+/* Header yang lebih ringan supaya logo MAYC kekal jelas. */
+.header {
+  background: rgba(255, 255, 255, .94);
+  color: var(--dakwat);
+  border-bottom: 1px solid rgba(8, 44, 92, .08);
+  box-shadow: 0 8px 30px rgba(8, 44, 92, .05);
+  backdrop-filter: blur(14px);
+}
+.jenama img { filter: drop-shadow(0 4px 12px rgba(8, 44, 92, .09)); }
+.jenama-teks span { color: #6F83A0; }
+.nav { color: #415674; }
+.nav a:hover, .nav a[aria-current="page"] { color: var(--biru); }
+.pil-acara { border-color: #C7D9F0; background: #EDF5FF; color: var(--dakwat); }
+.btn-menu { border-color: #C7D9F0; }
+.header .btn-menu svg { stroke: var(--dakwat); }
+.menu-penuh { background: var(--biru); }
+.menu-penuh .btn-menu { border-color: rgba(255, 255, 255, .24); }
+.menu-penuh .btn-menu svg { stroke: #fff; }
+.menu-senarai a { border-bottom-color: rgba(255, 255, 255, .18); }
+
+/* Hero MAYC: organisasi belia dahulu, program semasa kemudian. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--biru);
+  color: #fff;
+  padding: 40px 0 52px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  right: -180px;
+  top: -240px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .07);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  left: -190px;
+  bottom: -170px;
+  border-radius: 50%;
+  background: var(--biru-cerah);
+  opacity: .65;
+}
+.hero-grid { position: relative; z-index: 1; gap: 32px; }
+.hero-label { color: #C7DAF4; }
+.hero h1 { font-size: clamp(48px, 12vw, 96px); }
+.hero h1 .tahun { color: var(--emas); }
+.hero-pengenalan { color: #E5EFFC; }
+.hero .btn-garis { border-color: rgba(255, 255, 255, .42); color: #fff; }
+.hero-teras { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -4px; }
+.hero-teras span {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 999px;
+  color: #EAF2FD;
+  background: rgba(255, 255, 255, .06);
+}
+.hero-visual { display: grid; gap: 12px; }
+.hero-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  min-height: 420px;
+  aspect-ratio: 4 / 5;
+  background: #073B82;
+  box-shadow: 0 26px 70px rgba(2, 25, 59, .34);
+  border: 1px solid rgba(255, 255, 255, .17);
+}
+.hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.015);
+  image-rendering: auto;
+}
+.hero-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(3, 29, 67, .74) 100%);
+  pointer-events: none;
+}
+.hero-media-label {
+  position: absolute;
+  z-index: 2;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-media-label span {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #D4E5FB;
+}
+.hero-media-label b { font-size: 22px; line-height: 1.05; letter-spacing: -.02em; }
+.hero-stat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hero-stat div {
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  padding: 12px;
+}
+.hero-stat b { display: block; font-size: 18px; line-height: 1.1; }
+.hero-stat span {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: #C7DAF4;
+  text-transform: uppercase;
+}
+
+/* Program aktif diletakkan sebagai modul berasingan daripada identiti utama MAYC. */
+.acara-semasa { padding-top: 42px; }
+.acara-shell { display: grid; gap: 22px; align-items: start; }
+.acara-pengenalan { display: flex; flex-direction: column; gap: 12px; }
+.acara-pengenalan .label { color: var(--biru); }
+.acara-pengenalan p { margin: 0; max-width: 42ch; color: var(--kelabu-2); }
+.acara-shell .kad-acara {
+  background: var(--dakwat-2);
+  border-color: #1E5292;
+  box-shadow: 0 18px 55px rgba(8, 44, 92, .12);
+}
+.acara-shell .kad-acara-atas { border-bottom-color: #245A98; }
+.acara-shell .kad-acara-bawah a + a { border-top-color: #245A98; }
+
+/* Isi laman lebih berstruktur dan kurang kosong. */
+.teras div {
+  position: relative;
+  overflow: hidden;
+  border-color: #D6E3F4;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(8, 44, 92, .05);
+}
+.teras div::before {
+  position: absolute;
+  left: 18px;
+  top: 16px;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: #6D8EB9;
+}
+.teras div:nth-child(1)::before { content: '01'; }
+.teras div:nth-child(2)::before { content: '02'; }
+.teras div:nth-child(3)::before { content: '03'; }
+.teras div:nth-child(4)::before { content: '04'; }
+.teras div:nth-child(1) { border-top: 4px solid #0B4EAA; }
+.teras div:nth-child(2) { border-top: 4px solid #176DCE; }
+.teras div:nth-child(3) { border-top: 4px solid #F4C542; }
+.teras div:nth-child(4) { border-top: 4px solid #5D8BC4; }
+.kad-utama .gambar, .kad-kecil .gambar { box-shadow: 0 12px 26px rgba(8, 44, 92, .08); }
+.sorotan { background: var(--biru); box-shadow: 0 24px 70px rgba(8, 44, 92, .18); }
+.jalur a { background: #0A3D85; border: 1px solid rgba(255, 255, 255, .1); }
+#hubungi { padding-bottom: 64px; }
+#hubungi .hubungi {
+  background: #fff;
+  border: 1px solid #D9E5F4;
+  border-radius: 28px;
+  padding: 26px;
+  box-shadow: 0 18px 50px rgba(8, 44, 92, .07);
+}
+.footer { background: #EFF6FF; border-top-color: #D5E3F4; }
+.bar-bawah { background: var(--biru); box-shadow: 0 10px 30px rgba(8, 44, 92, .3); }
+.sej-hero, .falsafah, .ringkasan { background: var(--biru); }
+.penapis button[aria-pressed="true"] { background: var(--biru); border-color: var(--biru); }
+
+@media (min-width: 900px) {
+  .hero { padding: 72px 0 88px; }
+  .hero-grid { grid-template-columns: minmax(0, 1.12fr) minmax(340px, .78fr); gap: 70px; }
+  .hero-media { min-height: 560px; }
+  .hero-stat b { font-size: 20px; }
+  .acara-shell { grid-template-columns: minmax(0, .8fr) minmax(440px, 1.2fr); gap: 64px; }
+  #hubungi .hubungi { padding: 44px; }
+}
+
+@media (max-width: 899px) {
+  .hero-media { min-height: 0; aspect-ratio: 4 / 5; }
+  .hero-stat { grid-template-columns: 1fr 1fr 1.2fr; }
+  .hero-stat b { font-size: 15px; }
+  .hero-stat span { font-size: 8px; }
+}
