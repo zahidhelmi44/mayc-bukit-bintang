@@ -43,21 +43,10 @@ const sosial = [
         </div>
       </div>
 
-      <div class="hero-visual">
-        <div class="hero-media">
-          <video autoplay muted loop playsinline preload="metadata" poster="/brand/og-default.jpg" aria-label="Sorotan aktiviti MAYC Bukit Bintang">
-            <source src="/uploads/mayc-hero-loop.mp4" type="video/mp4" />
-          </video>
-          <div class="hero-media-label">
-            <span>Aktiviti belia</span>
-            <b>Di lapangan, bersama komuniti.</b>
-          </div>
-        </div>
-        <div class="hero-stat" aria-label="Ringkasan MAYC Bukit Bintang">
-          <div><b>1954</b><span>Sejak</span></div>
-          <div><b>4</b><span>Teras utama</span></div>
-          <div><b>Bukit Bintang</b><span>Komuniti</span></div>
-        </div>
+      <div class="hero-stat" aria-label="Ringkasan MAYC Bukit Bintang">
+        <div><b>1954</b><span>Sejak</span></div>
+        <div><b>4</b><span>Teras utama</span></div>
+        <div><b>Bukit Bintang</b><span>Komuniti</span></div>
       </div>
     </div>
   </section>
@@ -126,3 +115,12 @@ const sosial = [
     </div>
   </section>
 </Base>
+
+<style>
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .hero-teks { max-width: 960px; }
+  .hero-stat { width: 100%; max-width: 620px; }
+</style>
