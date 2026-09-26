@@ -25,13 +25,14 @@ const masaTamat = acara.tamat.split('T')[1] ?? '';
       <img class="kad-acara-logo" src={acara.logo} alt={acara.nama} width="900" height="334" />
       {acara.keterangan && <p class="kad-acara-ket">{acara.keterangan}</p>}
       <span class="kad-acara-lokasi">{jam12(masa)}{masaTamat && ` – ${jam12(masaTamat)}`}<br />{acara.lokasi.toUpperCase()}</span>
-      <div class="kiraan hanya-sebelum" role="timer" aria-label="Masa sebelum acara bermula">
+      <p class="race-headline" data-race-headline hidden></p>
+      <div class="kiraan" data-countdown role="timer" aria-label="Masa sebelum acara bermula">
         <div><b data-hari>00</b><span>HARI</span></div>
         <div><b data-jam>00</b><span>JAM</span></div>
         <div><b data-minit>00</b><span>MINIT</span></div>
         <div><b data-saat>00</b><span>SAAT</span></div>
       </div>
-      <p class="langsung hanya-berlangsung">Perlumbaan sedang berjalan. Keputusan dikemas kini secara langsung.</p>
+      <p class="langsung" data-race-note hidden></p>
       <a class="btn btn-emas" href={acara.pautanRider || acara.pautanKeputusan} data-cta>
         <span data-cta-label>Lihat senarai rider</span>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12L12 4"/><path d="M5.5 4H12v6.5"/></svg>
@@ -44,3 +45,8 @@ const masaTamat = acara.tamat.split('T')[1] ?? '';
     </div>
   </div>
 )}
+
+<style>
+  .race-headline { margin: 0; color: var(--emas); font-size: clamp(20px, 3vw, 28px); font-weight: 800; line-height: 1.15; letter-spacing: -.02em; }
+  [hidden] { display: none !important; }
+</style>
