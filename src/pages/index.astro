@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroBackground from '../components/HeroBackground.astro';
 import KadAcara from '../components/KadAcara.astro';
 import KadArtikel from '../components/KadArtikel.astro';
 import tetapan from '../data/tetapan.json';
@@ -25,6 +26,7 @@ const sosial = [
 ---
 <Base halaman="">
   <section class="hero">
+    <HeroBackground />
     <div class="bekas hero-grid">
       <div class="hero-teks">
         <span class="hero-label">{tetapan.namaPenuh}</span>

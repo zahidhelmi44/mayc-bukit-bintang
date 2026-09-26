@@ -1,0 +1,57 @@
+---
+const slides = [1, 2, 3, 4];
+---
+<div class="hero-background" aria-hidden="true">
+  {slides.map((slide, i) => <img
+    class:list={['hero-slide', { 'is-active': i === 0 }]}
+    src={`/uploads/hero/mayc-community-${slide}.webp`}
+    alt="" width={slide === 4 ? 1536 : 1672} height={slide === 4 ? 1024 : 941}
+    loading="eager" decoding="async" fetchpriority={i === 0 ? 'high' : 'low'}
+  />)}
+</div>
+<button class="hero-pause" type="button" hidden>Jeda latar</button>
+
+<style>
+  :global(.hero) { position: relative; isolation: isolate; overflow: hidden; }
+  :global(.hero-grid) { position: relative; z-index: 1; }
+  .hero-background { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: #17140f; }
+  .hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 1.8s ease-in-out; }
+  .hero-slide.is-active { opacity: 1; }
+  .hero-background::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,rgba(23,20,15,.86),rgba(23,20,15,.53) 60%,rgba(23,20,15,.66)),linear-gradient(0deg,rgba(23,20,15,.7),transparent 35%); }
+  .hero-pause { position: absolute; bottom: 12px; left: max(var(--tepi),calc((100% - var(--lebar))/2)); z-index: 2; padding: 7px 13px; min-height: 32px; border: 1px solid #ffffff38; border-radius: 18px; background: #17140fc9; color: #f4efe6; font-size: 11px; cursor: pointer; }
+  .hero-pause[hidden] { display: none; }
+  @media(max-width:899px) { .hero-background::after { background: linear-gradient(180deg,rgba(23,20,15,.75),rgba(23,20,15,.68) 45%,rgba(23,20,15,.9)); } }
+  @media(prefers-reduced-motion:reduce) { .hero-slide { transition: none; } }
+</style>
+
+<script>
+  const slides = Array.from(document.querySelectorAll<HTMLImageElement>('.hero-slide'));
+  const button = document.querySelector<HTMLButtonElement>('.hero-pause');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (button && slides.length > 1) {
+    let index = 0;
+    let paused = reduced.matches;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const sync = () => {
+      clearInterval(timer);
+      button.textContent = paused ? 'Mainkan latar' : 'Jeda latar';
+      if (paused || document.hidden) return;
+      timer = setInterval(() => {
+        // Keep the current photo if another asset has not loaded successfully.
+        for (let step = 1; step < slides.length; step++) {
+          const next = (index + step) % slides.length;
+          if (!slides[next].complete || !slides[next].naturalWidth) continue;
+          slides[index].classList.remove('is-active');
+          slides[next].classList.add('is-active');
+          index = next;
+          break;
+        }
+      }, 5000);
+    };
+    button.hidden = false;
+    button.addEventListener('click', () => { paused = !paused; sync(); });
+    document.addEventListener('visibilitychange', sync);
+    reduced.addEventListener('change', () => { paused = reduced.matches; sync(); });
+    sync();
+  }
+</script>
