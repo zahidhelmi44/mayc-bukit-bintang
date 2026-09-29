@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleComments from '../../components/ArticleComments.astro';
+import config from '../../data/engagement.json';
+---
+<Base title="Urus komen" halaman="artikel" barBawah={false}>
+  <meta slot="head" name="robots" content="noindex,nofollow" />
+  {config.enabled ? <ArticleComments admin /> : <div class="bekas" style="padding:64px 24px"><h1>Urus komen</h1><p>Ruangan ini belum diaktifkan.</p></div>}
+</Base>

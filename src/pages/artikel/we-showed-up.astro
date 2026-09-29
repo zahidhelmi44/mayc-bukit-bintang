@@ -1,4 +1,5 @@
 ---
+import ArticleComments from '../../components/ArticleComments.astro';
 import Base from '../../layouts/Base.astro';
 
 const results = [
@@ -418,6 +419,8 @@ const sponsors = [
       </div>
     </section>
   </article>
+
+  <ArticleComments slug="we-showed-up" lang="en" />
 
   <script>
     // Instagram has no web share URL: use the phone's share sheet (Instagram Story/DM appear there),

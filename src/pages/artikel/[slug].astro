@@ -1,4 +1,5 @@
 ---
+import ArticleComments from '../../components/ArticleComments.astro';
 import Base from '../../layouts/Base.astro';
 import KadArtikel from '../../components/KadArtikel.astro';
 import { render } from 'astro:content';
@@ -76,6 +77,8 @@ const labelAtas = [d.category, d.date ? tarikhPenuh(d.date) : ''].filter(Boolean
       {d.tags.length > 0 && <ul class="tag">{d.tags.map((t) => <li>#{t}</li>)}</ul>}
     </div>
   </article>
+
+  <ArticleComments slug={a.id} />
 
   <section class="kongsi" aria-label="Kongsi artikel">
     <span class="label">Kongsi artikel ini</span>

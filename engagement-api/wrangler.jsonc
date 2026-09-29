@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mayc-article-engagement",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-09-29",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://maycbukitbintang.com,https://www.maycbukitbintang.com",
+    "GOOGLE_CLIENT_ID": ""
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "mayc-article-engagement",
+    "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+    "migrations_dir": "migrations"
+  }],
+  "triggers": { "crons": ["15 3 * * *"] }
+}

@@ -1,0 +1,57 @@
+---
+import config from '../data/engagement.json';
+import ArticleStats from './ArticleStats.astro';
+interface Props { slug?: string; lang?: string; admin?: boolean }
+const { slug = '', lang = 'ms', admin = false } = Astro.props;
+const en = lang.startsWith('en');
+---
+{config.enabled && (
+  <section id="comments" class="article-comments" data-comments-root data-slug={slug} data-admin={String(admin)} data-lang={lang} data-api={config.apiBase} data-google-client={config.googleClientId}>
+    {!admin && <ArticleStats slug={slug} lang={lang} />}
+    <h2>{admin ? (en ? 'Manage comments' : 'Urus komen') : (en ? 'Join the conversation' : 'Ruang komen')}</h2>
+    <p class="intro">{admin ? (en ? 'Sign in with your admin Google account.' : 'Log masuk menggunakan akaun Google admin.') : (en ? 'Read freely. Sign in with Google only when you want to comment.' : 'Baca tanpa login. Log masuk Google hanya apabila awak mahu menghantar komen.')}</p>
+    <div class="comment-auth">
+      <button type="button" data-start-google>{en ? 'Sign in to comment' : 'Log masuk untuk komen'}</button>
+      <div data-google-button></div>
+      <p data-signed-name hidden></p>
+      <button type="button" class="secondary" data-signout hidden>{en ? 'Sign out' : 'Log keluar'}</button>
+      {!admin && <a href="/admin/komen/" data-admin-link hidden>{en ? 'Manage comments' : 'Urus komen'}</a>}
+    </div>
+    {!admin && (
+      <form data-comment-form hidden>
+        <label for="comment-body">{en ? 'Your comment' : 'Komen awak'}</label>
+        <textarea id="comment-body" name="body" rows="4" minlength="1" maxlength="2000" required placeholder={en ? 'Share your thoughts…' : 'Kongsi pandangan awak…'}></textarea>
+        <small>{en ? 'Your Google profile name and comment will be public. Your email will not be displayed. Comments appear immediately and may be removed by an admin.' : 'Nama profil Google dan komen awak akan dipaparkan kepada umum. Emel tidak dipaparkan. Komen terus disiarkan dan boleh dipadam oleh admin.'}</small>
+        <button type="submit">{en ? 'Post comment' : 'Hantar komen'}</button>
+      </form>
+    )}
+    <p class="comment-status" data-comment-status role="status" aria-live="polite"></p>
+    <div class="comment-list" data-comment-list></div>
+    <button type="button" class="secondary" data-more-comments hidden>{en ? 'Load more comments' : 'Lihat komen lagi'}</button>
+    <noscript>{en ? 'Enable JavaScript to view comments.' : 'Aktifkan JavaScript untuk melihat komen.'}</noscript>
+  </section>
+)}
+<style is:global>
+  .article-comments { max-width:820px; margin:52px auto; padding:30px 24px; border:1px solid #d8d0c2; border-radius:18px; background:#fffaf2; color:#17140f; font-family:Arial,sans-serif; }
+  .article-comments h2 { font-size:clamp(25px,4vw,34px); margin:18px 0 12px; line-height:1.2; letter-spacing:-.02em; }
+  .article-comments .intro,.article-comments small { color:#625c52; line-height:1.6; }
+  .article-comments button { border:1px solid #17140f; border-radius:999px; padding:12px 18px; font:600 14px Arial,sans-serif; background:#17140f; color:#fffaf2; cursor:pointer; min-height:44px; }
+  .article-comments button.secondary { background:transparent; color:#17140f; border-color:#c7bfae; }
+  .article-comments button:disabled { opacity:.55; cursor:wait; }
+  .article-comments [hidden] { display:none !important; }
+  .article-comments .comment-auth { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:22px 0; }
+  .article-comments .comment-auth a { text-decoration:underline; font-size:14px; }
+  .article-comments form { display:grid; gap:12px; margin:20px 0 32px; }
+  .article-comments form label { font-weight:600; }
+  .article-comments textarea { width:100%; box-sizing:border-box; resize:vertical; min-height:120px; border:1px solid #c7bfae; border-radius:12px; background:white; color:#17140f; padding:14px; font:16px/1.5 Arial,sans-serif; }
+  .article-comments form button { justify-self:start; }
+  .article-comments .comment-status { font-size:14px; line-height:1.5; }
+  .article-comments .comment-item { padding:22px 0; border-top:1px solid #ded7ca; overflow-wrap:anywhere; }
+  .article-comments .comment-item header { display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+  .article-comments .comment-item time { font-size:12px; color:#625c52; }
+  .article-comments .comment-item p { white-space:pre-wrap; line-height:1.65; margin:12px 0; }
+  .article-comments .comment-item a { display:block; margin:8px 0; text-decoration:underline; font-size:13px; }
+  .article-comments .comment-item button { margin-top:8px; border-color:#b32b2b; color:#9b2020; }
+  @media(max-width:600px) { .article-comments { margin:32px 16px; padding:22px 18px; } }
+</style>
+<script src="../scripts/engagement.ts"></script>
