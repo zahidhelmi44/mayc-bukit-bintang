@@ -52,7 +52,15 @@ node scripts/sync-engagement-articles.mjs
 npx wrangler d1 create mayc-article-engagement
 ```
 
-Put the returned database ID in `engagement-api/wrangler.jsonc` in place of `REPLACE_WITH_D1_DATABASE_ID`. Keep `ALLOWED_ORIGINS` restricted to the real site. If using a controlled staging site, authorize that exact origin separately.
+The owner created `mayc-article-engagement` in the dashboard and supplied database ID `731f2efe-9a71-4afa-886d-877a0f7b1b2b` on 29 September 2026. This ID is now configured in `engagement-api/wrangler.jsonc`; do not create a duplicate database for this deployment. Keep `ALLOWED_ORIGINS` restricted to the real site. If using a controlled staging site, authorize that exact origin separately.
+
+For the existing Cloudflare Workers Builds project, use branch `feature/article-google-comments`, root `/`, and build command `node scripts/sync-engagement-articles.mjs`. Set the deploy command to apply pending migrations before publishing the Worker:
+
+```sh
+npx wrangler d1 migrations apply DB --remote --config engagement-api/wrangler.jsonc && npx wrangler deploy --config engagement-api/wrangler.jsonc
+```
+
+The build token needs access to this D1 database as well as Worker deployment. If the build reports a permissions error, update its D1 permissions before retrying. Database configuration alone does not confirm that migrations, secrets or deployment have completed.
 
 ```sh
 npx wrangler d1 migrations apply DB --remote --config engagement-api/wrangler.jsonc
