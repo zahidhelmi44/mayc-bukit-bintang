@@ -1,0 +1,53 @@
+---
+import type { Artikel } from '../lib/util';
+import { tarikhPendek, pautanArtikel } from '../lib/util';
+import acara from '../data/acara.json';
+
+interface Props { a: Artikel }
+const { a } = Astro.props;
+const d = a.data;
+// "WE SHOWED UP — Pedal & Connect ..." → headline besar + subtajuk kecil.
+const [tajuk, ...subBahagian] = d.title.split(' — ');
+const subtajuk = subBahagian.join(' — ');
+const meta = [d.date ? tarikhPendek(d.date) : '', d.category].filter(Boolean).join(' · ');
+const href = pautanArtikel(a);
+---
+<article class="kad-terkini">
+  <a class="kad-terkini-atas" href={href}>
+    <div class="kad-terkini-gambar">
+      {d.cover ? <img src={d.cover} alt={d.coverAlt ?? ''} loading="eager" decoding="async" /> : <img src="/brand/mayc-bukit-bintang-logo.png" alt="" />}
+      <span class="status">Artikel terbaru</span>
+    </div>
+    <div class="kad-terkini-isi">
+      {meta && <span class="kad-acara-tarikh">{meta.toUpperCase()}</span>}
+      <h2>{tajuk}</h2>
+      {subtajuk && <p class="kad-terkini-sub">{subtajuk}</p>}
+      {d.ringkasan[0] && <p class="kad-acara-ket">{d.ringkasan[0]}</p>}
+      <span class="btn btn-emas">
+        <span>Baca artikel</span>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12L12 4"/><path d="M5.5 4H12v6.5"/></svg>
+      </span>
+    </div>
+  </a>
+  <div class="kad-acara-bawah">
+    {acara.pautanKeputusan && <a href={acara.pautanKeputusan}><span class="label gelap">{acara.nama}</span><span class="isi">Keputusan perlumbaan</span></a>}
+    <a href="/artikel/"><span class="label gelap">Artikel</span><span class="isi">Semua artikel</span></a>
+  </div>
+</article>
+
+<style>
+  .kad-terkini { border: 1px solid var(--garis-gelap); border-radius: 22px; background: var(--dakwat-2); display: flex; flex-direction: column; overflow: hidden; }
+  .kad-terkini-atas { display: flex; flex-direction: column; border-bottom: 1px solid #2E2921; }
+  .kad-terkini-gambar { position: relative; aspect-ratio: 16 / 10; background: #000; overflow: hidden; }
+  .kad-terkini-gambar img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+  .kad-terkini-atas:hover .kad-terkini-gambar img { transform: scale(1.03); }
+  .kad-terkini-gambar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.45), transparent 38%); pointer-events: none; }
+  .kad-terkini-gambar .status { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 7px 11px; border-radius: 999px; background: rgba(0,0,0,.6); backdrop-filter: blur(6px); }
+  .kad-terkini-isi { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .kad-terkini h2 { margin: 0; font-size: clamp(38px, 11vw, 56px); font-weight: 800; line-height: .9; letter-spacing: -0.05em; }
+  .kad-terkini-sub { margin: -2px 0 0; font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--kertas); }
+  .kad-terkini .btn { width: 100%; margin-top: 4px; }
+  @media (min-width: 900px) { .kad-terkini-isi { padding: 22px 26px 24px; } }
+  /* Telefon: teaser dahulu, sebelum teks hero. */
+  @media (max-width: 899px) { .kad-terkini { order: -1; } }
+</style>
