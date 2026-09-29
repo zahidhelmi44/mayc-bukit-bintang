@@ -1,9 +1,8 @@
-import { ApiError, verifyGoogleToken } from './google.mjs';
+import { ApiError, hash, ipKey, limit, login, requireAdmin } from './security.mjs';
+import { ingest, report } from './analytics.mjs';
 import articles from './articles.json' with { type: 'json' };
 const known = new Set(articles);
 const json = (data, status = 200) => Response.json(data, { status });
-const hash = async value => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))), n => n.toString(16).padStart(2, '0')).join('');
-const isAdmin = (user, env) => String(env.ADMIN_GOOGLE_SUBS || '').split(',').map(s => s.trim()).filter(Boolean).includes(user.sub);
 const slugCheck = slug => { if (!known.has(slug)) throw new ApiError('Article not found.', 404); return slug; };
 async function readBody(request) {
   if (!request.headers.get('content-type')?.startsWith('application/json')) throw new ApiError('Use JSON.', 415);
@@ -19,11 +18,6 @@ async function readBody(request) {
   try { const value = JSON.parse(new TextDecoder().decode(data)); if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(); return value; }
   catch { throw new ApiError('Invalid JSON.'); }
 }
-async function limit(db, key, max, window, now) {
-  const bucket = `${key}:${Math.floor(now / window)}`;
-  const row = await db.prepare('INSERT INTO engagement_limits(bucket, attempts, expires_at) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET attempts = attempts + 1 RETURNING attempts').bind(bucket, now + window).first();
-  if (row.attempts > max) throw new ApiError('Too many requests. Please wait a moment and try again.', 429);
-}
 async function stats(db, slugs) {
   const marks = slugs.map(() => '?').join(',');
   const [views, comments] = await db.batch([
@@ -38,7 +32,7 @@ function cursor(url) {
   if (!/^[1-9][0-9]{0,15}$/.test(value) || !Number.isSafeInteger(Number(value))) throw new ApiError('Invalid comment page.');
   return Number(value);
 }
-export function createWorker({ verify = verifyGoogleToken, clock = () => Date.now() } = {}) {
+export function createWorker({ clock = () => Date.now() } = {}) {
   return {
     async fetch(request, env) {
       const url = new URL(request.url); const origin = request.headers.get('Origin');
@@ -54,21 +48,25 @@ export function createWorker({ verify = verifyGoogleToken, clock = () => Date.no
           if (!['GET', 'POST', 'DELETE'].includes(request.method)) throw new ApiError('Method not allowed.', 405);
           if (request.method !== 'GET' && !origin) throw new ApiError('An allowed origin is required.', 403);
           const now = clock();
-          const identify = async () => {
-            const auth = request.headers.get('Authorization') || '';
-            if (!auth.startsWith('Bearer ')) throw new ApiError('Please sign in with Google to comment.', 401);
-            return verify(auth.slice(7), env.GOOGLE_CLIENT_ID);
-          };
-          if (request.method === 'GET' && url.pathname === '/v1/me') {
-            const user = await identify(); response = json({ name: user.name, accountId: user.sub, isAdmin: isAdmin(user, env) });
+          if (request.method === 'POST' && url.pathname === '/v1/admin/login') {
+            const input = await readBody(request);
+            response = json(await login(input.password, request, env, now));
+          } else if (request.method === 'POST' && url.pathname === '/v1/analytics') {
+            await ingest(await readBody(request), request, env, now);
+            response = json({ ok: true });
           } else if (request.method === 'GET' && url.pathname === '/v1/stats') {
             const slugs = [...new Set((url.searchParams.get('slugs') || '').split(',').filter(Boolean))];
             if (!slugs.length || slugs.length > 50) throw new ApiError('Select between 1 and 50 articles.');
             slugs.forEach(slugCheck); response = json({ articles: await stats(env.DB, slugs) });
           } else if (url.pathname.startsWith('/v1/admin/')) {
-            const user = await identify(); if (!isAdmin(user, env)) throw new ApiError('Only the site admin can manage comments.', 403);
-            if (request.method === 'GET' && url.pathname === '/v1/admin/comments') {
-              const { results } = await env.DB.prepare('SELECT id, slug, author_name AS name, body, created_at AS createdAt FROM article_comments WHERE id < ? ORDER BY id DESC LIMIT 21').bind(cursor(url)).all();
+            const sessionHash = await requireAdmin(request, env, now);
+            if (request.method === 'POST' && url.pathname === '/v1/admin/logout') {
+              await env.DB.prepare('DELETE FROM engagement_sessions WHERE token_hash = ?').bind(sessionHash).run();
+              response = json({ ok: true });
+            } else if (request.method === 'GET' && url.pathname === '/v1/admin/analytics') {
+              response = json(await report(env.DB, Number(url.searchParams.get('days') || 30), now));
+            } else if (request.method === 'GET' && url.pathname === '/v1/admin/comments') {
+              const { results } = await env.DB.prepare('SELECT id, slug, author_name AS name, email, body, created_at AS createdAt FROM article_comments WHERE id < ? ORDER BY id DESC LIMIT 21').bind(cursor(url)).all();
               response = json({ comments: results.slice(0, 20), next: results.length > 20 ? results[19].id : null });
             } else if (request.method === 'DELETE' && /^\/v1\/admin\/comments\/[1-9][0-9]*$/.test(url.pathname)) {
               const id = Number(url.pathname.split('/').pop()); if (!Number.isSafeInteger(id)) throw new ApiError('Invalid comment.');
@@ -83,10 +81,7 @@ export function createWorker({ verify = verifyGoogleToken, clock = () => Date.no
               if (match[2] === 'views' && request.method === 'POST') {
                 const input = await readBody(request);
                 if (typeof input.visitor !== 'string' || !/^[a-f0-9-]{36}$/.test(input.visitor)) throw new ApiError('Invalid visit.');
-                if (!env.RATE_LIMIT_SALT) throw new ApiError('Views are not configured yet.', 503);
-                const ip = request.headers.get('CF-Connecting-IP') || 'local';
-                const ipKey = await hash(`${env.RATE_LIMIT_SALT}:${Math.floor(now / 86400000)}:${ip}`);
-                await limit(env.DB, `view:${ipKey}`, 120, 60000, now);
+                await limit(env.DB, `view:${await ipKey(request, env, now)}`, 120, 60000, now);
                 const day = Math.floor(now / 86400000);
                 await env.DB.prepare('INSERT OR IGNORE INTO article_views(slug, visitor_hash, day) VALUES (?, ?, ?)').bind(slug, await hash(input.visitor), day).run();
                 response = json({ ...(await stats(env.DB, [slug]))[slug] });
@@ -94,18 +89,24 @@ export function createWorker({ verify = verifyGoogleToken, clock = () => Date.no
                 const { results } = await env.DB.prepare('SELECT id, author_name AS name, body, created_at AS createdAt FROM article_comments WHERE slug = ? AND id < ? ORDER BY id DESC LIMIT 21').bind(slug, cursor(url)).all();
                 response = json({ comments: results.slice(0, 20), next: results.length > 20 ? results[19].id : null });
               } else if (match[2] === 'comments' && request.method === 'POST') {
-                const user = await identify(); const input = await readBody(request);
+                const input = await readBody(request);
+                const name = typeof input.name === 'string' ? input.name.trim() : '';
+                const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+                if (name.length < 2 || name.length > 80 || /[\x00-\x1f]/.test(name)) throw new ApiError('Enter a display name between 2 and 80 characters.');
+                if (email && (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) throw new ApiError('Enter a valid email or leave it blank.');
+                if (input.website) throw new ApiError('Unable to submit this comment.');
                 const body = typeof input.body === 'string' ? input.body.trim() : '';
                 if (!body || body.length > 2000) throw new ApiError('Write a comment between 1 and 2,000 characters.');
                 if (typeof input.requestId !== 'string' || !/^[a-f0-9-]{36}$/.test(input.requestId)) throw new ApiError('Invalid submission.');
-                const existing = await env.DB.prepare('SELECT id, slug, body FROM article_comments WHERE google_sub = ? AND request_id = ?').bind(user.sub, input.requestId).first();
-                if (existing && (existing.slug !== slug || existing.body !== body)) throw new ApiError('Submission already used. Please try again.', 409);
+                const existing = await env.DB.prepare('SELECT id, slug, body, author_name, email FROM article_comments WHERE author_key = ? AND request_id = ?').bind('guest', input.requestId).first();
+                if (existing && (existing.slug !== slug || existing.body !== body || existing.author_name !== name || existing.email !== email)) throw new ApiError('Submission already used. Please try again.', 409);
                 if (!existing) {
-                  await limit(env.DB, `comment-minute:${user.sub}`, 3, 60000, now);
-                  await limit(env.DB, `comment-hour:${user.sub}`, 20, 3600000, now);
-                  await env.DB.prepare('INSERT OR IGNORE INTO article_comments(slug, google_sub, author_name, body, request_id, created_at) VALUES (?, ?, ?, ?, ?, ?)').bind(slug, user.sub, user.name, body, input.requestId, now).run();
+                  const visitorIp = await ipKey(request, env, now);
+                  await limit(env.DB, `comment-minute:${visitorIp}`, 3, 60000, now);
+                  await limit(env.DB, `comment-hour:${visitorIp}`, 20, 3600000, now);
+                  await env.DB.prepare('INSERT OR IGNORE INTO article_comments(slug, author_key, author_name, email, body, request_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(slug, 'guest', name, email, body, input.requestId, now).run();
                 }
-                const saved = await env.DB.prepare('SELECT id, author_name AS name, body, created_at AS createdAt FROM article_comments WHERE google_sub = ? AND request_id = ?').bind(user.sub, input.requestId).first();
+                const saved = await env.DB.prepare('SELECT id, author_name AS name, body, created_at AS createdAt FROM article_comments WHERE author_key = ? AND request_id = ?').bind('guest', input.requestId).first();
                 response = json({ comment: saved, ...(await stats(env.DB, [slug]))[slug] }, existing ? 200 : 201);
               }
             }
@@ -130,7 +131,10 @@ export function createWorker({ verify = verifyGoogleToken, clock = () => Date.no
       const now = clock();
       await env.DB.batch([
         env.DB.prepare('DELETE FROM article_views WHERE day < ?').bind(Math.floor(now / 86400000) - 2),
-        env.DB.prepare('DELETE FROM engagement_limits WHERE expires_at < ?').bind(now)
+        env.DB.prepare('DELETE FROM engagement_limits WHERE expires_at < ?').bind(now),
+        env.DB.prepare('DELETE FROM engagement_sessions WHERE expires_at < ?').bind(now),
+        env.DB.prepare('DELETE FROM analytics_clicks WHERE created_at < ?').bind(now - 90 * 86400000),
+        env.DB.prepare('DELETE FROM analytics_pages WHERE created_at < ?').bind(now - 90 * 86400000)
       ]);
     }
   };

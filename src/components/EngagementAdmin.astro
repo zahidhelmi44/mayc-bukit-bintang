@@ -1,0 +1,68 @@
+---
+import config from '../data/engagement.json';
+interface Props { view?: string }
+const { view = 'analytics' } = Astro.props;
+---
+<section class="engagement-admin bekas" data-engagement-admin data-api={config.apiBase} data-initial-view={view}>
+  <p class="label">MAYC BUKIT BINTANG · ADMIN</p>
+  <h1>Website engagement</h1>
+  {config.enabled || config.analyticsEnabled ? (
+    <>
+      <form data-admin-login class="admin-login">
+        <label for="admin-password">Password admin</label>
+        <input id="admin-password" name="password" type="password" autocomplete="current-password" required maxlength="256" />
+        <button type="submit">Log masuk</button>
+      </form>
+      <p data-admin-status role="status" aria-live="polite"></p>
+      <div data-admin-content hidden>
+        <div class="admin-toolbar">
+          <button type="button" data-admin-tab="analytics" aria-pressed={view === 'analytics' ? 'true' : 'false'}>Analitik website</button>
+          <button type="button" data-admin-tab="comments" aria-pressed={view === 'comments' ? 'true' : 'false'}>Komen &amp; emel</button>
+          <button type="button" data-admin-logout>Log keluar</button>
+        </div>
+        <section data-analytics-panel>
+          <div class="admin-toolbar"><label>Tempoh <select data-analytics-days><option value="7">7 hari</option><option value="30" selected>30 hari</option><option value="90">90 hari</option></select></label><button type="button" data-refresh-analytics>Refresh</button></div>
+          <div class="analytics-summary" data-analytics-summary></div>
+          <p class="admin-note">Pelawat ialah anggaran browser unik. Sesi engaged = sekurang-kurangnya 10 saat aktif, 2 halaman, atau 1 klik. Klik perkongsian tidak membuktikan kandungan sudah dikongsi.</p>
+          <div class="analytics-tables" data-analytics-tables></div>
+          <p class="admin-note">Data bermula selepas pengaktifan. Rekod analytics disimpan selama 90 hari; pelawat yang menyekat analytics mungkin tidak dikira. Tarikh harian dipaparkan mengikut waktu Malaysia.</p>
+        </section>
+        <section data-admin-comments-panel hidden>
+          <h2>Komen pembaca</h2>
+          <p class="admin-note">Nama diisi sendiri. Emel pilihan hanya untuk urusan berkaitan komen; tiada persetujuan langganan pemasaran dikumpulkan.</p>
+          <div data-admin-comments></div>
+          <button type="button" data-admin-more hidden>Lihat komen lagi</button>
+        </section>
+      </div>
+    </>
+  ) : <p>Panel ini belum diaktifkan.</p>}
+</section>
+<style is:global>
+  .engagement-admin { padding:48px 24px 80px; max-width:1120px; }
+  .engagement-admin h1 { font-size:clamp(32px,6vw,56px); line-height:1.1; margin:16px 0 30px; }
+  .engagement-admin h2 { font-size:24px; margin:24px 0 14px; }
+  .engagement-admin [hidden] { display:none !important; }
+  .engagement-admin input,.engagement-admin select { background:#fff; color:#17140f; border:1px solid #bcb4a7; border-radius:9px; padding:12px; font:inherit; min-height:44px; }
+  .engagement-admin button { padding:12px 18px; min-height:44px; border:1px solid #bcb4a7; border-radius:24px; background:#fffaf2; color:#17140f; font:600 14px Arial,sans-serif; cursor:pointer; }
+  .engagement-admin button[aria-pressed="true"],.engagement-admin button[type="submit"] { background:#17140f; color:white; }
+  .engagement-admin button:disabled { opacity:.55; cursor:wait; }
+  .engagement-admin .admin-login { max-width:400px; display:grid; gap:12px; }
+  .engagement-admin .admin-toolbar { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:22px 0; }
+  .engagement-admin [data-admin-logout] { margin-left:auto; }
+  .engagement-admin .analytics-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:26px 0; }
+  .engagement-admin .metric { border:1px solid #d8d0c2; background:#fffaf2; border-radius:14px; padding:22px; }
+  .engagement-admin .metric small { display:block; font-size:12px; color:#625c52; line-height:1.4; }
+  .engagement-admin .metric strong { display:block; font-size:32px; margin:10px 0 0; }
+  .engagement-admin .admin-note { font-size:13px; line-height:1.7; color:#625c52; }
+  .engagement-admin .table-wrap { overflow-x:auto; margin-bottom:28px; border:1px solid #d8d0c2; border-radius:12px; }
+  .engagement-admin table { width:100%; border-collapse:collapse; background:#fffaf2; font-size:13px; }
+  .engagement-admin th,.engagement-admin td { text-align:left; padding:13px; border-bottom:1px solid #e5dfd4; line-height:1.5; }
+  .engagement-admin th { background:#eee8db; white-space:nowrap; }
+  .engagement-admin td { overflow-wrap:anywhere; max-width:340px; }
+  .engagement-admin .admin-comment { background:#fffaf2; border:1px solid #d8d0c2; border-radius:14px; padding:22px; margin:16px 0; overflow-wrap:anywhere; }
+  .engagement-admin .admin-comment p { white-space:pre-wrap; line-height:1.6; }
+  .engagement-admin .admin-comment small,.engagement-admin .admin-comment a { display:block; margin:8px 0; }
+  .engagement-admin .admin-comment button { color:#9b2020; border-color:#cda1a1; }
+  @media(max-width:650px) { .engagement-admin .analytics-summary { grid-template-columns:1fr 1fr; } .engagement-admin .metric { padding:16px; } .engagement-admin .metric strong { font-size:25px; } }
+</style>
+<script src="../scripts/engagement-admin.ts"></script>

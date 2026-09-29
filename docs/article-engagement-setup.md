@@ -1,44 +1,58 @@
-# Article views and Google comments
+# Guest comments and website engagement
 
-Implementation branch: `feature/article-google-comments`.
+Draft PR #4: https://github.com/zahidhelmi44/mayc-bukit-bintang/pull/4
 
-## Behaviour
+## Accepted behaviour
 
-- Articles, comment lists and view counts remain public. Google loads only after the visitor clicks sign in to comment.
-- Only posting a comment requires Google authentication. A verified Google ID token supplies the displayed profile name; a manually submitted name is ignored.
-- Comments appear immediately. No approval queue.
-- The allowlisted admin can delete comments at `/admin/komen/` or from an article after signing in. Other accounts cannot delete.
-- Email addresses and Google account IDs never appear in public comment responses. Names are Google profile names, not independently verified legal names.
-- The ID token stays in memory. The browser stores only an anonymous random visit identifier, used to avoid counting refreshes as new daily views.
-- Views count once per browser/article/UTC day. They are not exact unique people and start at zero when enabled. Private windows, clearing storage and other devices can be counted separately. Bots are rate-limited, not perfectly excluded.
-- API counts are shared across devices. No client-side fake totals. A unavailable API displays a dash, not a misleading zero.
+- Reading articles, statistics and comments is public. Posting also needs no account or Google login.
+- Display name is required (2–80 characters), email is optional and private, comment is required (up to 2,000 characters).
+- Comments publish immediately. Names are self-provided, not authenticated identities.
+- Public API responses never contain email. The password-protected admin sees the optional email and can delete comments.
+- “Remember my name on this device” is opt-in and stores the display name only, never the email or comment body.
+- Submitted email is for matters related to the comment; no marketing consent is collected.
+- The public privacy-information page explains these behaviours.
 
-## Current activation state
+## Website metrics
 
-`src/data/engagement.json` has `enabled: false`. Do not enable it until the real Worker, D1 database, Google web client and admin allowlist are configured and the live sign-in flow has been checked. The existing static site does not itself run this Worker.
+The `/admin/analitik/` dashboard and `/admin/komen/` share the same admin panel, with tabs that preserve the current in-memory session.
 
-## Set up Google Sign-In
+The dashboard supports rolling 7, 30 and 90 day reports:
 
-1. In the owner's Google Cloud project, configure Google Auth Platform branding, support contact and audience for the MAYC site.
-2. Create an OAuth client of type **Web application**.
-3. Authorize `https://maycbukitbintang.com` and `https://www.maycbukitbintang.com` as JavaScript origins. Add a staging origin separately if required.
-4. Use that client ID in both the Worker `GOOGLE_CLIENT_ID` and the site's `googleClientId` setting. This ID is public; no Google client secret belongs in the frontend.
-5. Configure the Google app audience for the intended public users, rather than only private test users. The integration uses Google Identity Services' popup credential callback.
+| Metric | Definition |
+|---|---|
+| Page views | One event per page load, deduplicated by random page ID on retries. |
+| Estimated unique visitors | Distinct server-keyed browser identifiers within the selected period. Not exact people. |
+| Sessions | Per-tab session identifier renewed after 30 minutes of inactivity. |
+| Engaged sessions | At least 10 seconds of measured active time, two page views, or one tracked click. |
+| Active time | Measured while the document is visible and the window focused; background time is excluded. |
+| Scroll depth | Maximum visible viewport bottom as a percentage of the document height. It does not prove comprehension. |
+| Traffic source | Session entry referrer hostname, or safe allowlisted UTM labels. No full referrer URLs. |
+| Campaigns | `utm_source`, `utm_medium`, `utm_campaign`; restricted characters, up to 80 characters. |
+| Device | Mobile/tablet/desktop viewport category, not hardware fingerprinting. |
+| Clicks | Article links, race results, WhatsApp, Instagram, native share menu, copy-link, contact, navigation and other external links. Clicking share is not proof of a completed share. |
 
-Official guidance:
-- https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
-- https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+Use labelled links to distinguish otherwise ambiguous social sources, e.g. `https://maycbukitbintang.com/artikel/we-showed-up/?utm_source=facebook&utm_medium=social&utm_campaign=metro_vol2`. Some apps omit referrers; those visits remain direct/unknown without labels.
 
-## Deploy the separate Cloudflare Worker
+The script runs only on public pages and skips the admin and privacy pages. It honours Do Not Track and Global Privacy Control and does not run if durable browser storage is unavailable. No visitor name, email, form contents, full referrer URLs or raw IP address is stored in the analytics tables. Analytics IDs are separate from comment records and article-view deduplication IDs. Admin activity is not measured.
 
-Run from this repository with an authenticated Wrangler session:
+Raw analytics page/click rows are retained for 90 days by a daily scheduled cleanup. Article view totals are preserved longer. Public article-view counts use a different definition: once per browser/article/UTC day, so they will not equal page views. All counts start after activation; no historical data has been invented or imported.
+
+## Activation status
+
+Both `enabled` and `analyticsEnabled` are **false** in `src/data/engagement.json`. The production website is unchanged. The feature needs a deployed Cloudflare Worker and D1 database; the existing static site cannot run the API itself. Google Cloud is no longer needed.
+
+Cloudflare access from the implementation session was blocked by browser security verification. Do not activate placeholder endpoints or claim deployment complete until the real service is verified.
+
+## Deploy the backend
+
+Use an authenticated Cloudflare Wrangler session from the repository root:
 
 ```sh
 node scripts/sync-engagement-articles.mjs
 npx wrangler d1 create mayc-article-engagement
 ```
 
-Copy the returned database ID into `engagement-api/wrangler.jsonc`, replacing the placeholder. Set `GOOGLE_CLIENT_ID` to the Google web client ID. Keep `ALLOWED_ORIGINS` restricted to the actual website origins.
+Put the returned database ID in `engagement-api/wrangler.jsonc` in place of `REPLACE_WITH_D1_DATABASE_ID`. Keep `ALLOWED_ORIGINS` restricted to the real site. If using a controlled staging site, authorize that exact origin separately.
 
 ```sh
 npx wrangler d1 migrations apply DB --remote --config engagement-api/wrangler.jsonc
@@ -46,48 +60,50 @@ npx wrangler deploy --config engagement-api/wrangler.jsonc
 node -e "process.stdout.write(require('crypto').randomBytes(32).toString('hex'))" | npx wrangler secret put RATE_LIMIT_SALT --config engagement-api/wrangler.jsonc
 ```
 
-The service fails closed for views if the salt is missing. No API credentials are published in the site.
-
-Admin setup: on a controlled preview configured with the real Google client and Worker, sign in with the owner's selected Google account. The authenticated `/v1/me` response returns that account's `accountId`. Set this stable Google subject ID as a Worker secret (comma-separated if more than one admin is deliberately authorised):
+Set a new dedicated admin password with the hidden prompt helper, piping the resulting salted hash directly into a Worker secret:
 
 ```sh
-npx wrangler secret put ADMIN_GOOGLE_SUBS --config engagement-api/wrangler.jsonc
+node scripts/admin-password.mjs | npx wrangler secret put ADMIN_PASSWORD_HASH --config engagement-api/wrangler.jsonc
 ```
 
-No account can promote itself, and there is no first-user-becomes-admin rule. An empty allowlist grants no administrator access. Only the account owner/operator controlling Cloudflare can set the allowlist.
+Use a unique password of at least 16 characters. Neither the password nor its hash belongs in the frontend or GitHub source. Only the owner should enter the new password. Authentication uses a short-lived opaque bearer session token held in memory, never browser persistent storage. Logging out revokes the server session; rotating the hash invalidates all old sessions. Rate limiting applies to sign-in and guest comments. An unconfigured admin cannot sign in.
 
-Official D1 guidance:
-- https://developers.cloudflare.com/d1/reference/migrations/
-- https://developers.cloudflare.com/d1/worker-api/d1-database/
+The second migration upgrades the earlier un-deployed Google draft schema without deleting existing test comments. It renames the legacy author key column; all new posts use the guest namespace. There is no active Google dependency.
 
-## Enable and verify
+## Connect the static website
 
-Set `src/data/engagement.json`:
+After the API is deployed, set:
 
 ```json
 {
   "enabled": true,
-  "apiBase": "https://YOUR-DEPLOYED-WORKER.workers.dev",
-  "googleClientId": "YOUR-GOOGLE-WEB-CLIENT-ID.apps.googleusercontent.com"
+  "analyticsEnabled": true,
+  "apiBase": "https://YOUR-REAL-WORKER.workers.dev"
 }
 ```
 
-Run `npm run test:engagement` (Node 24+) and `npm run build`, then publish the static website through its existing deployment. The build rejects missing or invalid configuration when engagement is enabled.
+Set only the flags for the services intended to go live. The build rejects an invalid API origin. Run:
 
-On the real site verify:
+```sh
+npm run test:engagement
+npm run build
+```
 
-1. Logged-out readers can open every article and read comments without any login prompt blocking the page.
-2. Refreshing the same article does not add views within the same UTC day.
-3. A signed-in Google reader posts successfully and sees their profile name immediately. Text containing HTML is displayed as text.
-4. A regular Google account receives a denial for admin endpoints; the configured admin can delete a comment and its public count decreases.
-5. Test mobile layout and the genuine Google popup. These depend on the deployed origins and cannot be fully verified using placeholder configuration.
+Publish through the existing website deployment after verifying the real API. The owner can then use `/admin/analitik/` for analytics and `/admin/komen/` for comments; the tabs switch without needing a second login.
 
-Google origin verification and Cloudflare deployment were not completed in the implementation session because account access/configuration was unavailable.
+## Final live checks
 
-## Article updates and operations
+1. Anonymous readers can open articles, read comments and post with only a name and comment.
+2. Optional email is absent from public responses and appears only after admin authentication.
+3. A repeated submission does not add a duplicate comment; repeated article refreshes do not increase its daily browser view count.
+4. Admin login works; wrong password and missing/expired token fail; deleting a comment updates the public list and count.
+5. Visit a labelled test URL, scroll and click a share link. Check source, page, scroll and click reports; private form values must not appear in analytics.
+6. Check the real mobile and desktop layouts. Counts will under-report users with blockers or opt-outs.
 
-The Worker uses a generated article allowlist. Whenever a new article slug is added, run `npm run engagement:sync` and redeploy the Worker alongside publishing the article. `engagement-api/src/articles.json` is generated from the existing Markdown content catalogue, including the bespoke `we-showed-up` route.
+The tests use real SQLite migrations and real admin password/session verification. Production Cloudflare deployment and visual browser checks remain outstanding because the service was inaccessible from the agent browser.
 
-The daily scheduled task removes old deduplication rows and rate-limit buckets while preserving total views. Admin deletion removes a comment from the database and the public count. D1 backups/Time Travel are governed by the owner's Cloudflare settings.
+When adding a new article slug, run `npm run engagement:sync` and redeploy the Worker along with publishing the article. Its generated allowlist prevents arbitrary analytics paths and comment targets.
 
-Backend tests use real SQLite queries and cryptographically signed test JWTs. They cover public access, duplicate views, immediate comments, identity spoofing, retries, admin-only deletion, origin restrictions, rate limiting, pagination, expiry, wrong audience and forged JWT payloads.
+References:
+- https://developers.cloudflare.com/d1/reference/migrations/
+- https://developers.cloudflare.com/d1/worker-api/d1-database/

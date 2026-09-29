@@ -3,8 +3,10 @@ on:
   pull_request:
     paths:
       - 'engagement-api/**'
-      - 'src/scripts/engagement.ts'
+      - 'src/scripts/*engagement*.ts'
+      - 'src/scripts/site-analytics.ts'
       - 'src/components/Article*.astro'
+      - 'src/components/EngagementAdmin.astro'
       - '.github/workflows/article-engagement.yml'
 permissions:
   contents: read
