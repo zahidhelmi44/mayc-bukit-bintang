@@ -1,11 +1,16 @@
 ---
-const slides = [1, 2, 3, 4];
+const slides = [
+  { file: 'mayc-event-0480.webp', position: '50% 70%' },
+  { file: 'mayc-event-0462.webp', position: '50% 45%' },
+  { file: 'mayc-event-0469.webp', position: '50% 40%' },
+];
 ---
 <div class="hero-background" aria-hidden="true">
   {slides.map((slide, i) => <img
     class:list={['hero-slide', { 'is-active': i === 0 }]}
-    src={`/uploads/hero/mayc-community-${slide}.webp`}
-    alt="" width={slide === 4 ? 1536 : 1672} height={slide === 4 ? 1024 : 941}
+    src={`/uploads/hero/${slide.file}`}
+    style={`object-position: ${slide.position}`}
+    alt="" width={1920} height={1279}
     loading="eager" decoding="async" fetchpriority={i === 0 ? 'high' : 'low'}
   />)}
 </div>
@@ -15,7 +20,7 @@ const slides = [1, 2, 3, 4];
   :global(.hero) { position: relative; isolation: isolate; overflow: hidden; }
   :global(.hero-grid) { position: relative; z-index: 1; }
   .hero-background { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: #17140f; }
-  .hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 1.8s ease-in-out; }
+  .hero-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; transition: opacity 2.5s ease-in-out; }
   .hero-slide.is-active { opacity: 1; }
   .hero-background::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg,rgba(23,20,15,.86),rgba(23,20,15,.53) 60%,rgba(23,20,15,.66)),linear-gradient(0deg,rgba(23,20,15,.7),transparent 35%); }
   .hero-pause { position: absolute; bottom: 12px; left: max(var(--tepi),calc((100% - var(--lebar))/2)); z-index: 2; padding: 7px 13px; min-height: 32px; border: 1px solid #ffffff38; border-radius: 18px; background: #17140fc9; color: #f4efe6; font-size: 11px; cursor: pointer; }
@@ -46,7 +51,7 @@ const slides = [1, 2, 3, 4];
           index = next;
           break;
         }
-      }, 5000);
+      }, 8000);
     };
     button.hidden = false;
     button.addEventListener('click', () => { paused = !paused; sync(); });
