@@ -78,6 +78,10 @@ const pedigree = [
 
 const img = (name: string) => `/media/metro-after-dark/${name}`;
 
+const shareTitle = 'WE SHOWED UP — Pedal & Connect Vol.2 × Metro Madness! Vol.2';
+const shareUrl = new URL('/artikel/we-showed-up/', Astro.site).toString();
+const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareTitle}\n${shareUrl}`)}`;
+
 // Each photo ships as name-800.webp (half width), name.webp (default) and, for full-bleed shots, name-2400.webp.
 // Attributes are written out on each <img> rather than spread, so Astro keeps the scoped-style attribute on them.
 const srcset = (name: string, { width = 1600, xl = false } = {}) =>
@@ -402,9 +406,40 @@ const sponsors = [
         <p>PEDAL &amp; CONNECT VOL.2<br/>METRO MADNESS! VOL.2</p>
         <p class="mad-muted">MAYC BUKIT BINTANG × RIDEWILD KL<br/>26 SEPTEMBER 2026</p>
         <a href="/" class="mad-end-link">WE MOVE. →</a>
+        <div class="mad-share" id="share" data-share data-title={shareTitle} data-url={shareUrl}>
+          <p class="mad-end-small">PASS IT ON.</p>
+          <div class="mad-share-row">
+            <a class="mad-share-btn primary" href={whatsappUrl} target="_blank" rel="noopener">WhatsApp ↗</a>
+            <button class="mad-share-btn" type="button" data-share-native>Instagram ↗</button>
+            <button class="mad-share-btn" type="button" data-share-copy>Copy link</button>
+          </div>
+          <p class="mad-share-note" data-share-note aria-live="polite"></p>
+        </div>
       </div>
     </section>
   </article>
+
+  <script>
+    // Instagram has no web share URL: use the phone's share sheet (Instagram Story/DM appear there),
+    // or copy the link on desktop where the share sheet is not available.
+    const box = document.querySelector<HTMLElement>('[data-share]');
+    if (box) {
+      const { title = '', url = location.href } = box.dataset;
+      const note = box.querySelector<HTMLElement>('[data-share-note]')!;
+      const say = (text: string) => { note.textContent = text; };
+      const copy = async (text: string) => {
+        try { await navigator.clipboard.writeText(url); say(text); } catch { say(`Copy this link: ${url}`); }
+      };
+      box.querySelector('[data-share-native]')?.addEventListener('click', async () => {
+        if (navigator.share) {
+          try { await navigator.share({ title, url }); } catch { /* dismissed */ }
+          return;
+        }
+        copy('Link copied — paste it into your Instagram story or DM.');
+      });
+      box.querySelector('[data-share-copy]')?.addEventListener('click', () => copy('Link copied.'));
+    }
+  </script>
 
   <style>
     .mad{--m-black:#0b0b0a;--m-ink:#11110f;--m-paper:#f1eee7;--m-yellow:#efb134;--m-blue:#1d4d7c;--m-muted:#aaa39a;background:var(--m-black);color:#fff;overflow:hidden}
@@ -472,6 +507,16 @@ const sponsors = [
     .sponsor{flex:0 0 50%;border:1px solid #26241f;margin:0 -1px -1px 0}
     @media (width>=760px){.sponsor{flex-basis:25%}}
     @media (width>=1050px){.sponsor{flex-basis:16.666%}}
+
+    /* share */
+    .mad-share{margin-top:clamp(4rem,8vw,6rem);padding-top:1.5rem;border-top:1px solid #26241f}
+    .mad-share-row{display:flex;flex-wrap:wrap;gap:10px}
+    .mad-share-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 1.6rem;border:1px solid #3a372f;border-radius:999px;background:transparent;color:#fff;font:700 15px/1 var(--f-utama);letter-spacing:.01em;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+    .mad-share-btn:hover{border-color:#fff}
+    .mad-share-btn.primary{background:var(--m-yellow);border-color:var(--m-yellow);color:var(--m-ink)}
+    .mad-share-btn.primary:hover{background:#fff;border-color:#fff}
+    .mad-share-note{min-height:1.5em;margin:1rem 0 0;font:500 11px/1.5 var(--f-mono);letter-spacing:.1em;color:#aaa39a}
+    @media (width<=759px){.mad-share-btn{flex:1 1 100%}}
 
     /* the bigger point: Haikal Zaini statement (original Malay) */
     .mad-haikal{max-width:1240px;margin:clamp(5rem,10vw,8rem) auto 0;border-top:1px solid #cbc4b8;padding-top:2rem;display:grid;gap:3rem}
