@@ -10,6 +10,8 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   type?: 'website' | 'article';
   halaman?: string;
   barBawah?: boolean;
@@ -19,6 +21,8 @@ const {
   title,
   description = 'MAYC Bukit Bintang — menyatukan belia sejak 1954 melalui sivik, sukan, rekreasi dan kesenian.',
   image = '/brand/og-default.jpg',
+  imageWidth,
+  imageHeight,
   type = 'website',
   halaman = '',
   barBawah = true,
@@ -47,6 +51,8 @@ const locale = lang.startsWith('en') ? 'en_MY' : 'ms_MY';
     <meta property="og:description" content={description} />
     <meta property="og:url" content={kanonik} />
     <meta property="og:image" content={gambarOg} />
+    {imageWidth && <meta property="og:image:width" content={String(imageWidth)} />}
+    {imageHeight && <meta property="og:image:height" content={String(imageHeight)} />}
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
