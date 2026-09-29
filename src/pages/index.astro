@@ -3,12 +3,18 @@ import Base from '../layouts/Base.astro';
 import HeroBackground from '../components/HeroBackground.astro';
 import KadAcara from '../components/KadAcara.astro';
 import KadArtikel from '../components/KadArtikel.astro';
+import KadTerkini from '../components/KadTerkini.astro';
 import tetapan from '../data/tetapan.json';
 import acara from '../data/acara.json';
 import { semuaArtikel, pautanArtikel } from '../lib/util';
+import { malaysiaTime } from '../lib/event-phase.mjs';
 
 const artikel = await semuaArtikel();
 const [utama, ...lain] = artikel;
+
+// Hero: kad acara sehingga perlumbaan tamat; selepas itu teaser artikel terbaru.
+const acaraSelesai = Date.now() >= malaysiaTime(acara.tamatRace || acara.tamat);
+const tunjukAcara = acara.aktif && !acaraSelesai;
 const sisi = lain.slice(0, 3);
 
 const sorotan = artikel.flatMap((a) =>
@@ -41,7 +47,7 @@ const sosial = [
           <a class="btn btn-garis" href="/sejarah/">Sejarah MAYC</a>
         </div>
       </div>
-      {acara.aktif && <KadAcara />}
+      {tunjukAcara ? <KadAcara /> : utama && <KadTerkini a={utama} />}
     </div>
   </section>
 
@@ -87,7 +93,7 @@ const sosial = [
 
   <section class="seksyen" id="hubungi">
     <div class="bekas hubungi">
-      <h2>Jom <span class="serif">berhubung.</span></h2>
+      <h2>Let’s <span class="serif">connect.</span></h2>
       <div class="hubungi-butang">
         {wa && <a class="btn btn-dakwat" href={wa}><span>WhatsApp</span><span class="kecil">{tetapan.whatsapp}</span></a>}
         {tetapan.emel && <a class="btn btn-garis-terang" href={`mailto:${tetapan.emel}`}><span>E-mel</span><span class="kecil" style="color:var(--kelabu)">{tetapan.emel}</span></a>}
