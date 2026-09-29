@@ -1,4 +1,5 @@
 ---
+import engagement from '../data/engagement.json';
 import tetapan from '../data/tetapan.json';
 const tahun = new Date().getFullYear();
 ---
@@ -9,5 +10,6 @@ const tahun = new Date().getFullYear();
       <span class="label">© {tahun} {tetapan.namaCawangan}</span>
     </span>
     {tetapan.instagram && <a class="label" href={`https://www.instagram.com/${tetapan.instagram}/`}>Instagram @{tetapan.instagram}</a>}
+    {(engagement.enabled || engagement.analyticsEnabled) && <a class="label" href="/privasi/">Privasi</a>}
   </div>
 </footer>

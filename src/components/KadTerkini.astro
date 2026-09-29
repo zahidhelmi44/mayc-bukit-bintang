@@ -1,4 +1,5 @@
 ---
+import ArticleStats from './ArticleStats.astro';
 import type { Artikel } from '../lib/util';
 import { tarikhPendek, pautanArtikel } from '../lib/util';
 import acara from '../data/acara.json';
@@ -23,6 +24,7 @@ const href = pautanArtikel(a);
       <h2>{tajuk}</h2>
       {subtajuk && <p class="kad-terkini-sub">{subtajuk}</p>}
       {d.ringkasan[0] && <p class="kad-acara-ket">{d.ringkasan[0]}</p>}
+      <ArticleStats slug={a.id} />
       <span class="btn btn-emas">
         <span>Baca artikel</span>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#17140F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12L12 4"/><path d="M5.5 4H12v6.5"/></svg>

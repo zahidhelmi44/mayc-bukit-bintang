@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SiteAnalytics from '../components/SiteAnalytics.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import BarBawah from '../components/BarBawah.astro';
@@ -68,6 +69,7 @@ const locale = lang.startsWith('en') ? 'en_MY' : 'ms_MY';
     <Footer />
     {barBawah && <BarBawah />}
     {acara.aktif && <script type="application/json" id="data-acara" set:html={JSON.stringify(acara)} />}
+    <SiteAnalytics />
     <script src="../scripts/acara.ts"></script>
   </body>
 </html>

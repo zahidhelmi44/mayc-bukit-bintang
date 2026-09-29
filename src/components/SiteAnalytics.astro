@@ -1,0 +1,6 @@
+---
+import config from '../data/engagement.json';
+const publicPage = !Astro.url.pathname.startsWith('/admin/') && !Astro.url.pathname.startsWith('/privasi');
+---
+{config.analyticsEnabled && publicPage && <span hidden data-site-analytics data-api={config.apiBase}></span>}
+<script src="../scripts/site-analytics.ts"></script>

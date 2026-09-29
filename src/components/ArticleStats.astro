@@ -1,0 +1,18 @@
+---
+import config from '../data/engagement.json';
+interface Props { slug: string; lang?: string }
+const { slug, lang = 'ms' } = Astro.props;
+const en = lang.startsWith('en');
+---
+{config.enabled && (
+  <span class="article-stats" data-article-stats={slug} data-engagement-api={config.apiBase} aria-label={en ? 'Article activity' : 'Aktiviti artikel'}>
+    <span><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span data-views>—</span> {en ? 'views' : 'bacaan'}</span>
+    <span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v12H9l-5 4V4Z"/></svg><span data-comment-count>—</span> {en ? 'comments' : 'komen'}</span>
+  </span>
+)}
+<style>
+  .article-stats { display:flex; flex-wrap:wrap; gap:18px; font-size:12px; line-height:1.6; color:inherit; opacity:.78; padding-top:8px; }
+  .article-stats > span { display:inline-flex; gap:5px; align-items:center; }
+  svg { flex:none; }
+</style>
+<script src="../scripts/engagement.ts"></script>

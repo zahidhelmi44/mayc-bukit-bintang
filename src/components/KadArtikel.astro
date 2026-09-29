@@ -1,4 +1,5 @@
 ---
+import ArticleStats from './ArticleStats.astro';
 import type { Artikel } from '../lib/util';
 import { tarikhPendek, minitBacaan, pautanArtikel } from '../lib/util';
 interface Props { a: Artikel; jenis?: 'utama' | 'kecil' }
@@ -15,6 +16,7 @@ const vt = `gambar-${a.id}`;
     </div>
     <h3>{d.title}</h3>
     <span class="meta">{meta}</span>
+    <ArticleStats slug={a.id} />
   </a>
 ) : (
   <a class="kad-kecil" href={pautanArtikel(a)}>
@@ -25,6 +27,7 @@ const vt = `gambar-${a.id}`;
       <span class="label">{d.category}</span>
       <h3>{d.title}</h3>
       <span class="meta">{meta}</span>
+    <ArticleStats slug={a.id} />
     </div>
   </a>
 )}

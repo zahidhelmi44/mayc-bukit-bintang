@@ -1,0 +1,56 @@
+---
+import config from '../data/engagement.json';
+import ArticleStats from './ArticleStats.astro';
+interface Props { slug: string; lang?: string }
+const { slug, lang = 'ms' } = Astro.props;
+const en = lang.startsWith('en');
+---
+{config.enabled && (
+  <section id="comments" class="article-comments" data-comments-root data-slug={slug} data-lang={lang} data-api={config.apiBase}>
+    <ArticleStats slug={slug} lang={lang} />
+    <h2>{en ? 'Join the conversation' : 'Ruang komen'}</h2>
+    <p class="intro">{en ? 'Share your thoughts. No account or login needed.' : 'Kongsi pandangan awak. Tak perlu akaun atau login.'}</p>
+    <form data-comment-form>
+      <div class="comment-fields">
+        <label>{en ? 'Display name *' : 'Nama paparan *'}<input name="name" autocomplete="nickname" minlength="2" maxlength="80" required /></label>
+        <label>{en ? 'Email (optional, private)' : 'Emel (pilihan, peribadi)'}<input name="email" type="email" autocomplete="email" maxlength="254" /></label>
+      </div>
+      <label for="comment-body">{en ? 'Your comment *' : 'Komen awak *'}</label>
+      <textarea id="comment-body" name="body" rows="4" minlength="1" maxlength="2000" required placeholder={en ? 'Share your thoughts…' : 'Kongsi pandangan awak…'}></textarea>
+      <label class="comment-remember"><input name="remember" type="checkbox" />{en ? 'Remember my name on this device' : 'Ingat nama saya pada peranti ini'}</label>
+      <div class="comment-trap" aria-hidden="true"><label>Website<input name="website" type="text" tabindex="-1" autocomplete="off" /></label></div>
+      <small>{en ? 'Your display name and comment will be public immediately. Names are self-provided. Optional email is visible only to the admin for matters related to your comment. Admins may remove comments.' : 'Nama paparan dan komen awak terus dipaparkan kepada umum. Nama diisi sendiri. Emel pilihan hanya dilihat oleh admin bagi urusan berkaitan komen. Admin boleh memadam komen.'}</small>
+      <small><a href="/privasi/">{en ? 'Privacy information' : 'Maklumat privasi'}</a></small>
+      <button type="submit">{en ? 'Post comment' : 'Hantar komen'}</button>
+    </form>
+    <p class="comment-status" data-comment-status role="status" aria-live="polite"></p>
+    <div class="comment-list" data-comment-list></div>
+    <button type="button" class="secondary" data-more-comments hidden>{en ? 'Load more comments' : 'Lihat komen lagi'}</button>
+    <noscript>{en ? 'Enable JavaScript to read or post comments.' : 'Aktifkan JavaScript untuk membaca atau menghantar komen.'}</noscript>
+  </section>
+)}
+<style is:global>
+  .article-comments { max-width:820px; margin:52px auto; padding:30px 24px; border:1px solid #d8d0c2; border-radius:18px; background:#fffaf2; color:#17140f; font-family:Arial,sans-serif; }
+  .article-comments h2 { font-size:clamp(25px,4vw,34px); margin:18px 0 12px; line-height:1.2; letter-spacing:-.02em; }
+  .article-comments .intro,.article-comments small { color:#625c52; line-height:1.6; }
+  .article-comments button { border:1px solid #17140f; border-radius:999px; padding:12px 18px; font:600 14px Arial,sans-serif; background:#17140f; color:#fffaf2; cursor:pointer; min-height:44px; }
+  .article-comments button.secondary { background:transparent; color:#17140f; border-color:#c7bfae; }
+  .article-comments button:disabled { opacity:.55; cursor:wait; }
+  .article-comments [hidden] { display:none !important; }
+  .article-comments form { display:grid; gap:12px; margin:20px 0 32px; }
+  .article-comments form label { font-weight:600; line-height:1.5; }
+  .article-comments textarea,.article-comments input:not([type="checkbox"]) { width:100%; box-sizing:border-box; border:1px solid #c7bfae; border-radius:10px; background:white; color:#17140f; padding:12px; font:16px/1.5 Arial,sans-serif; }
+  .article-comments textarea { resize:vertical; min-height:120px; }
+  .article-comments form button { justify-self:start; }
+  .article-comments .comment-fields { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .article-comments .comment-fields label { display:grid; gap:6px; font-size:14px; }
+  .article-comments .comment-remember { display:flex; gap:9px; align-items:center; font-size:13px; font-weight:400; }
+  .article-comments .comment-trap { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+  .article-comments .comment-status { font-size:14px; line-height:1.5; }
+  .article-comments .comment-item { padding:22px 0; border-top:1px solid #ded7ca; overflow-wrap:anywhere; }
+  .article-comments .comment-item header { display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+  .article-comments .comment-item time { font-size:12px; color:#625c52; }
+  .article-comments .comment-item p { white-space:pre-wrap; line-height:1.65; margin:12px 0; }
+  @media(max-width:600px) { .article-comments { margin:32px 16px; padding:22px 18px; } .article-comments .comment-fields { grid-template-columns:1fr; } }
+</style>
+<script src="../scripts/engagement.ts"></script>
