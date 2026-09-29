@@ -1,0 +1,488 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const results = [
+  {
+    label: 'FIXED OPEN · CATEGORY A',
+    rows: [
+      ['01', 'Mohamad Aidil Bin Mohamad Ayub', 'Bib #23 · 04:35.00'],
+      ['02', 'Al Kenedy', 'Bib #2 · 04:38.00'],
+      ['03', 'Nik Akif Iman Bin Mohd Riza', 'Bib #31'],
+    ],
+  },
+  {
+    label: 'MEN MIXED OPEN · CATEGORY B',
+    rows: [
+      ['01', 'Ahmad Luqmaan Bin Azman Shah', 'Bib #9 · 03:46.00'],
+      ['02', 'Mohamad Aidil Bin Mohamad Ayub', 'Bib #21 · 03:47.00'],
+      ['03', 'Muhammad Haziq Danish Bin Norizam', 'Bib #33'],
+    ],
+  },
+  {
+    label: 'WOMEN MIXED OPEN · CATEGORY C',
+    rows: [
+      ['01', 'Nurzarina Binti Mohammad Zaki', 'Bib #29 · 05:24.00'],
+      ['02', 'Husna Razali', 'Bib #25 · 05:36.00'],
+      ['03', 'Noraidillina Adilla J. Sam', 'Bib #48'],
+    ],
+  },
+  {
+    label: 'LAST MAN STANDING',
+    rows: [
+      ['01', 'Mohamad Aidil Bin Mohamad Ayub', 'Bib #23'],
+      ['02', 'Muhammad Haziq Danish Bin Norizam', 'Bib #33'],
+      ['03', 'Nik Akif Iman Bin Mohd Riza', 'Bib #31'],
+    ],
+  },
+];
+
+const pedigree = [
+  {
+    name: 'NASRUL FIRAS BIN RIDZUAN',
+    line: 'Selangor cycling athlete listed for SUKMA Sarawak 2024 and SUKMA Selangor 2026.',
+    source: 'https://msnselangor.gov.my/sukma-xxii-selangor-2026/direktori-kontinjen-selangor-sukma-selangor-2026-2/kontinjen-berbasikal-2026/',
+  },
+  {
+    name: 'MUHAMMAD HAZIQ DANISH BIN NORIZAM',
+    line: 'SUKMA Selangor rider with road-racing and U23 mountain-bike results on record.',
+    source: 'https://www.procyclingstats.com/rider/muhammad-haziq-danish-bin-norizam',
+  },
+  {
+    name: 'MOHAMAD AIDIL BIN MOHAMAD AYUB',
+    line: 'A Malaysian junior road and track competitor who arrived with national-championship race miles.',
+    source: 'https://www.procyclingstats.com/rider/mohamad-aidil-bin-mohamad-ayub',
+  },
+  {
+    name: 'NORAIDILLINA ADILLA J. SAM',
+    line: 'An experienced Malaysian cyclist with Asian track, Singapore Cycling Cup and para-cycling competition history.',
+    source: 'https://www.ukm.my/news/Latest_News/atlet-ping-pong-dan-berbasikal-dinobat-olahragawan-dan-olahragawati-ukm/',
+  },
+  {
+    name: 'AL KENEDY',
+    line: 'A familiar name in Malaysia’s fixed-gear scene, Kenedy brought years of competitive urban cycling experience into the Metro Madness field — eventually finishing second in the Fixed Gear final.',
+  },
+  {
+    name: 'MOHD RAZIF MOHD SALLEH',
+    line: 'A former UCI Continental rider with LeTua Cycling Team, Razif brought years of Malaysian road and off-road racing experience into the Men Mixed field.',
+  },
+  {
+    name: 'MOHD SHAFARI “AWIE” ABDUL MALIK',
+    line: 'A veteran of Malaysian road and mountain-bike racing, Awie brought more than two decades of competitive cycling experience to the Metro Madness field.',
+  },
+  {
+    // Present at Pedal & Connect Vol.2; organiser records do not show her racing Metro Madness.
+    name: 'RINA ZAKI',
+    line: 'Malaysian MTB racer and 2024 Selangor King of Mountain Women’s Open champion, Rina Zaki was among the established cycling names present at Pedal & Connect Vol.2.',
+  },
+];
+
+const img = (name: string) => `/media/metro-after-dark/${name}`;
+
+// Each photo ships as name-800.webp (half width), name.webp (default) and, for full-bleed shots, name-2400.webp.
+// Attributes are written out on each <img> rather than spread, so Astro keeps the scoped-style attribute on them.
+const srcset = (name: string, { width = 1600, xl = false } = {}) =>
+  [
+    `${img(`${name}-800.webp`)} ${Math.floor(width / 2)}w`,
+    `${img(`${name}.webp`)} ${width}w`,
+    ...(xl ? [`${img(`${name}-2400.webp`)} 2400w`] : []),
+  ].join(', ');
+
+const sponsors = [
+  { file: 'kbs.png', name: 'Kementerian Belia dan Sukan', kind: 'badge', width: 240, height: 240 },
+  { file: 'rakan-muda.png', name: 'Rakan Muda', kind: 'badge', width: 240, height: 240 },
+  { file: 'ridewild.png', name: 'RideWild', kind: 'mark', width: 431, height: 140 },
+  { file: 'mayhem.png', name: 'Mayhem', kind: 'mark', width: 606, height: 140 },
+  { file: 'velo-vibe.png', name: 'Velo Vibe', kind: 'stack', width: 263, height: 240 },
+  { file: 'worthless.png', name: 'Worthless', kind: 'mark', width: 656, height: 140 },
+  { file: 'ops.png', name: 'ops!', kind: 'stack', width: 277, height: 240 },
+  { file: 'versussika.png', name: 'Versussika', kind: 'mark', width: 448, height: 140 },
+  { file: 'tits.png', name: 'TITS', kind: 'badge', width: 181, height: 240 },
+  { file: 'pcc.png', name: 'Panda Cyclist Clan', kind: 'badge', width: 240, height: 240 },
+  { file: 'motion-lab.png', name: 'Motion Lab', kind: 'stack', width: 958, height: 140 },
+  { file: 'ybc.png', name: 'YBC', kind: 'stack', width: 600, height: 254 },
+];
+---
+
+<Base
+  lang="en"
+  title="WE SHOWED UP — Pedal & Connect Vol.2 × Metro Madness! Vol.2"
+  description="A night of bikes, people, rain and pure madness — Pedal & Connect Vol.2 × Metro Madness! Vol.2 at IYC Cheras."
+  image={img('og.jpg')}
+  imageWidth={1200}
+  imageHeight={630}
+  type="article"
+  halaman="artikel"
+  barBawah={false}
+>
+  <article class="mad">
+    <section class="mad-hero">
+      <img src={img('hero.webp')} srcset={srcset('hero', { xl: true })} sizes="100vw" width="1600" height="1066" alt="Riders launching from the start line at Metro Madness Vol.2" fetchpriority="high" decoding="async" />
+      <div class="mad-hero-shade"></div>
+      <div class="mad-hero-copy">
+        <p class="mad-kicker">26.09.2026 / IYC CHERAS / KUALA LUMPUR</p>
+        <h1><span>WE</span><span>SHOWED</span><span>UP.</span></h1>
+        <p class="mad-sub">PEDAL &amp; CONNECT VOL.2 × METRO MADNESS! VOL.2</p>
+        <p class="mad-scroll">A NIGHT OF BIKES, PEOPLE, RAIN &amp; PURE MADNESS. <span>SCROLL ↓</span></p>
+      </div>
+    </section>
+
+    <section class="mad-light mad-intro mad-pad">
+      <div class="mad-narrow">
+        <p class="mad-kicker dark">WHY THIS NIGHT EXISTED</p>
+        <div class="mad-lead">
+          <p>Some came to race. Some came for their friends. Some came with a crew. Some volunteered. Some simply wanted to see what was happening.</p>
+          <p>Different ages. Different backgrounds. Different reasons for showing up.</p>
+          <p><strong>Same place. Same night. Same energy.</strong></p>
+          <p>For MAYC Bukit Bintang, that was the point. Pedal &amp; Connect was never built around cycling alone. It was built around bringing young people into the same space — to meet, participate, contribute and find a community.</p>
+          <p>This time, bikes were the connection.</p>
+        </div>
+      </div>
+      <div class="mad-statement dark">GIVE YOUNG PEOPLE<br/>A REASON TO<br/>COME TOGETHER.</div>
+      <figure class="mad-photo medium">
+        <img src={img('smile.webp')} srcset={srcset('smile')} sizes="min(1080px, 90vw)" width="1600" height="1066" alt="A rider smiling after a Metro Madness race" loading="lazy" decoding="async" />
+      </figure>
+    </section>
+
+    <section class="mad-dark mad-sound mad-pad">
+      <div class="mad-narrow">
+        <p class="mad-kicker">PUT THIS ON FIRST.</p>
+        <h2>THIS STORY<br/>HAS A SOUNDTRACK.</h2>
+        <p class="mad-muted">Hit play. Keep scrolling.</p>
+        <div class="spotify-stack">
+          <iframe title="Victory Lap by Fred again.., Skepta and PlaqueBoyMax on Spotify" src="https://open.spotify.com/embed/track/1lbNgoJ5iMrMluCyhI4OQP?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          <iframe title="WE ON GO II by BIA, A$AP Ferg and Denzel Curry on Spotify" src="https://open.spotify.com/embed/track/4M0jSlN1MOaVRbA3Shr0FV?utm_source=generator" width="100%" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        <p class="mad-kicker sound-end">PRESS PLAY → KEEP MOVING</p>
+      </div>
+    </section>
+
+    <section class="mad-light mad-opening mad-pad">
+      <div class="mad-split">
+        <figure class="mad-photo"><img src={img('dato-arman.webp')} srcset={srcset('dato-arman')} sizes="(min-width: 760px) 45vw, 100vw" width="1600" height="1066" alt="Dato' Arman at the opening of Pedal & Connect Vol.2" loading="lazy" decoding="async" /></figure>
+        <div class="mad-copyblock">
+          <p class="mad-kicker dark">00:00 / BEFORE THE FLAG DROPPED</p>
+          <h2>READY<br/>TO RACE?</h2>
+          <p>The night was officially opened by <strong>Dato’ Arman, President of KLCA</strong>. His message was short: the value of the night was bigger than a race — it was about people meeting beyond background, race or religion through a shared interest in cycling.</p>
+          <blockquote>“I know you guys are ready to race tonight.”</blockquote>
+          <p class="mad-by">DATO’ ARMAN<br/><span>PRESIDENT / KLCA</span></p>
+        </div>
+      </div>
+      <div class="mad-go"><span>RACE STATUS</span><strong>GO →</strong></div>
+    </section>
+
+    <section class="mad-dark mad-grid mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker">THE GRID</p>
+        <h2>EVERYBODY<br/>WANTED IN.</h2>
+        <div class="mad-facts"><span>TRACK / 555M</span><span>CONDITIONS / WET</span><span>NIGHT RACE / IYC</span><span>MALAYSIA + SINGAPORE</span></div>
+      </div>
+      <figure class="mad-photo full"><img src={img('grid.webp')} srcset={srcset('grid', { xl: true })} sizes="min(1450px, 96vw)" width="1600" height="1066" alt="Riders gathered on the start grid before a Metro Madness heat" loading="lazy" decoding="async" /></figure>
+    </section>
+
+    <section class="mad-dark mad-track mad-pad">
+      <div class="mad-wide">
+        <p class="mad-number">555M</p>
+        <h2>SHORT ENOUGH TO LOOK EASY.<br/><span>TECHNICAL ENOUGH TO PROVE OTHERWISE.</span></h2>
+        <p class="mad-two-line">The rain had stopped.<br/>The track hadn’t forgotten.</p>
+      </div>
+      <div class="mad-race-grid">
+        <figure class="mad-photo"><img src={img('race-01.webp')} srcset={srcset('race-01')} sizes="(min-width: 760px) 48vw, 100vw" width="1600" height="1066" alt="A rider attacking a wet technical corner at Metro Madness Vol.2" loading="lazy" decoding="async" /></figure>
+        <figure class="mad-photo"><img src={img('race-02.webp')} srcset={srcset('race-02')} sizes="(min-width: 760px) 48vw, 100vw" width="1600" height="1070" alt="A rider racing through a technical corner at night" loading="lazy" decoding="async" /></figure>
+        <figure class="mad-photo wide-img"><img src={img('race-03.webp')} srcset={srcset('race-03', { xl: true })} sizes="min(1450px, 96vw)" width="1600" height="1066" alt="A rider on a green bike leaning hard into a corner" loading="lazy" decoding="async" /></figure>
+      </div>
+      <div class="mad-statement">WET TARMAC.<br/>TIGHT CORNERS.<br/>NO FREE LAPS.</div>
+    </section>
+
+    <section class="mad-light mad-pedigree mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker dark">RACE MILES</p>
+        <h2>NOT EVERYONE<br/>ON THAT GRID<br/>WAS NEW TO THIS.</h2>
+        <p class="mad-muted-dark">The field mixed emerging riders and community racers with state, national and international competition experience — and the night drew established names from across Malaysian cycling.</p>
+        <div class="pedigree-grid">
+          {pedigree.map((r, i) => (
+            <article class="pedigree-card">
+              <span class="pedigree-no">0{i + 1}</span>
+              <h3>{r.name}</h3>
+              <p>{r.line}</p>
+              {r.source && <a href={r.source} target="_blank" rel="noopener">SOURCE ↗</a>}
+            </article>
+          ))}
+        </div>
+      </div>
+      <div class="mad-photo-pair">
+        <figure><img src={img('al-kenedy.webp')} srcset={srcset('al-kenedy', { width: 1421 })} sizes="(min-width: 760px) 36vw, 50vw" width="1421" height="2133" alt="Al Kenedy at Metro Madness Vol.2" loading="lazy" decoding="async" /></figure>
+        <figure><img src={img('dini-akhbar.webp')} srcset={srcset('dini-akhbar')} sizes="(min-width: 760px) 57vw, 50vw" width="1600" height="1066" alt="Dini Akhbar racing at Metro Madness Vol.2" loading="lazy" decoding="async" /></figure>
+      </div>
+    </section>
+
+    <section class="mad-dark mad-loud mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker">THEN IT GOT LOUD</p>
+        <div class="mad-beats">
+          <span>ONE CORNER.</span>
+          <span>ONE MOVE.</span>
+          <span>ONE MISTAKE.</span>
+          <span>KEEP PEDALLING.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="mad-light mad-women mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker dark">WOMEN MIXED OPEN</p>
+        <h2>THEY DIDN’T<br/>COME TO WATCH.</h2>
+        <p class="mad-lead short">The women’s field brought its own pace, pressure and aggression to the course. What began as another category quickly became one of the moments people remembered from the night.</p>
+      </div>
+      <figure class="mad-photo full"><img src={img('women-grid.webp')} srcset={srcset('women-grid', { xl: true })} sizes="min(1450px, 96vw)" width="1600" height="1066" alt="Women Mixed Open riders on the start line" loading="lazy" decoding="async" /></figure>
+      <div class="mad-women-row">
+        <figure class="mad-photo"><img src={img('women-podium.webp')} srcset={srcset('women-podium')} sizes="(min-width: 760px) 50vw, 100vw" width="1600" height="1066" alt="Women riders with their prizes on the Pedal &amp; Connect stage" loading="lazy" decoding="async" /></figure>
+        <div class="mad-statement dark">FULL<br/>SEND.</div>
+      </div>
+    </section>
+
+    <section class="mad-dark mad-results mad-pad" id="results">
+      <div class="mad-wide">
+        <p class="mad-kicker">OFFICIAL RESULTS / 26.09.26</p>
+        <h2>WHO TOOK<br/>THE NIGHT.</h2>
+        <div class="results-grid">
+          {results.map((cat) => (
+            <section class="result-card">
+              <h3>{cat.label}</h3>
+              {cat.rows.map((row) => (
+                <div class="result-row"><b>{row[0]}</b><div><strong>{row[1]}</strong><span>{row[2]}</span></div></div>
+              ))}
+            </section>
+          ))}
+        </div>
+        <a class="mad-link" href="https://race.maycbukitbintang.com/results" target="_blank" rel="noopener">VIEW FULL RACE RESULTS →</a>
+      </div>
+      <figure class="mad-photo medium"><img src={img('results.webp')} srcset={srcset('results')} sizes="min(1080px, 90vw)" width="1600" height="1066" alt="Metro Madness riders and organisers after the prize presentation" loading="lazy" decoding="async" /></figure>
+    </section>
+
+    <section class="mad-dark mad-ridewild mad-pad">
+      <div class="mad-split ridewild-split">
+        <figure class="mad-photo"><img src={img('syafiq.webp')} srcset={srcset('syafiq')} sizes="(min-width: 760px) 45vw, 100vw" width="1600" height="1066" alt="Syafiq Rahmat of RideWild KL addressing riders" loading="lazy" decoding="async" /></figure>
+        <div class="mad-copyblock">
+          <p class="mad-kicker">RIDEWILD KL / FIELD NOTES</p>
+          <h2>PURE<br/>MADNESS.</h2>
+          <blockquote>“METROMADNESS VOL.2 is definitely one of the maddest events we’ve experienced this year.”</blockquote>
+          <blockquote>“Once the race started, it was nothing short of chaos and pure madness.”</blockquote>
+          <blockquote>“What really stood out for us was the support from the community.”</blockquote>
+          <p class="mad-by light">SYAFIQ RAHMAT<br/><span>RIDEWILD KL</span></p>
+        </div>
+      </div>
+      <div class="mad-statement">RIDE WILD.<br/>AND BE SAFE. 🤙🏽</div>
+    </section>
+
+    <section class="mad-light mad-mayc mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker dark">THE BIGGER POINT</p>
+        <h2>THE PODIUM<br/>WAS NEVER<br/>THE WHOLE POINT.</h2>
+      </div>
+      <div class="mad-split reverse">
+        <figure class="mad-photo"><img src={img('community.webp')} srcset={srcset('community')} sizes="(min-width: 760px) 45vw, 100vw" width="1600" height="1066" alt="The event team in matching Pedal &amp; Connect jerseys" loading="lazy" decoding="async" /></figure>
+        <div class="mad-copyblock">
+          <p>For MAYC Bukit Bintang, Pedal &amp; Connect is a platform to bring young people together through things they already care about.</p>
+          <p>This time, Metro Madness was the activity. Pedal &amp; Connect was the platform.</p>
+          <p>The activity may change. The purpose does not.</p>
+          <p><strong>Create the space. Bring people together. Let the connection happen.</strong></p>
+          <blockquote>“This success belongs to everyone who gave their time, energy and support. We hope this becomes the start of more youth programmes and more collaborations after this.”</blockquote>
+          <p class="mad-by">HAIKAL ZAINI<br/><span>CHAIRMAN / MAYC BUKIT BINTANG</span></p>
+        </div>
+      </div>
+      <div class="mad-haikal">
+        <div class="mad-haikal-lead">
+          <p class="mad-haikal-context">For MAYC Bukit Bintang Chairman Haikal Zaini, the significance of the night went beyond racing. The turnout reflected a wider need among young people for spaces built around their interests, communities and everyday realities.</p>
+          <p class="mad-reach"><b>NEARLY</b><strong>3,000</strong><span>YOUTHS REACHED</span></p>
+        </div>
+        <div>
+          <blockquote class="mad-haikal-quote" lang="ms">
+            <p>“Pedal &amp; Connect Vol. 2 bukan sekadar program racing, tetapi satu bukti bahawa komuniti kita sebenarnya sangat dahagakan ruang untuk berkumpul, berinteraksi dan terlibat dalam aktiviti yang sihat.</p>
+            <p>Ini merupakan program racing pertama yang kami anjurkan, namun sambutannya luar biasa apabila berjaya mencapai hampir 3,000 belia.</p>
+            <p>Angka ini menunjukkan bahawa apabila kita hadir dengan program yang dekat dengan minat dan realiti kehidupan anak muda, mereka akan datang dan mereka akan terlibat.</p>
+            <p>Bagi kami, impak sebenar program ini bukan hanya pada jumlah kehadiran, tetapi bagaimana kita berjaya membawa komuniti yang mungkin selama ini terpinggir kembali ke dalam satu ruang yang positif.</p>
+            <p>Ini baru permulaan dan kami mahu terus membina lebih banyak platform yang benar-benar memberi impak kepada komuniti.”</p>
+          </blockquote>
+          <p class="mad-by">HAIKAL ZAINI<br/><span>CHAIRMAN / MAYC BUKIT BINTANG</span></p>
+        </div>
+      </div>
+      <div class="mad-statement dark">COME FOR THE EVENT.<br/>LEAVE WITH A COMMUNITY.</div>
+    </section>
+
+    <section class="mad-light mad-bts mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker dark">BEHIND THE NIGHT</p>
+        <h2>YOU SAW THE RACE.<br/>YOU DIDN’T SEE<br/>EVERYTHING ELSE.</h2>
+      </div>
+      <div class="mad-split">
+        <figure class="mad-photo"><img src={img('crew.webp')} srcset={srcset('crew')} sizes="(min-width: 760px) 45vw, 100vw" width="1600" height="1066" alt="Crew with mics and clipboards at the trackside" loading="lazy" decoding="async" /></figure>
+        <div class="mad-copyblock">
+          <p>Registration. Course prep. Rider calls. Timing. Volunteer coordination. Safety. Crowd movement. Awards. The small jobs that only become visible when one of them goes wrong.</p>
+          <blockquote>“A lot happened behind the scenes that people didn’t see. The race only worked because a lot of people kept moving at the same time.”</blockquote>
+          <p class="mad-by">ALIF RAMLAN<br/><span>PROGRAMME DIRECTOR / PEDAL &amp; CONNECT VOL.2</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mad-digital mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker">BEHIND THE SCREEN</p>
+        <h2>THE EVENT WAS<br/>MOVING ONLINE TOO.</h2>
+        <p class="mad-digital-copy">“We wanted the digital side to make things easier, not make the event feel more complicated. Riders and spectators could follow the race, check heats and results, and stay updated from their phones. When traffic started increasing during the night, we expanded the capacity so the system could keep up with the crowd.”</p>
+        <p class="mad-by light">ZAHID HELMI<br/><span>MULTIMEDIA BUREAU / PEDAL &amp; CONNECT VOL.2</span></p>
+        <div class="metrics">
+          <div><b>452</b><span>UNIQUE VISITORS</span></div>
+          <div><b>819</b><span>VISITS</span></div>
+          <div><b>3,431</b><span>PAGE VIEWS</span></div>
+          <div><b>97%</b><span>MOBILE</span></div>
+        </div>
+        <p class="mad-data-note">Peak traffic hit <strong>613 page views between 22:00–23:00</strong>. As more people came online, the capacity had to grow with them.</p>
+      </div>
+    </section>
+
+    <section class="mad-favourite mad-pad">
+      <div class="mad-wide fav-grid">
+        <div>
+          <p class="mad-kicker dark">THE CROWD HAD A SAY</p>
+          <div class="fav-number">048</div>
+        </div>
+        <div class="fav-copy">
+          <h2>NORAIDILLINA<br/>ADILLA J. SAM</h2>
+          <p>FAVOURITE RIDER / COMMUNITY VOTE</p>
+          <strong>43 VOTES · 35.8%</strong>
+          <span>120 total votes were cast across 23 riders.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="mad-dark mad-safety mad-pad">
+      <div class="mad-narrow">
+        <p class="mad-kicker">MEDICAL SUPPORT / FDI 01</p>
+        <h2>RACING<br/>BITES BACK.</h2>
+        <p>Five riders required medical attention during the event. Four were treated on site. One rider received initial treatment before being transferred to Hospital Selayang for further care.</p>
+        <p class="mad-muted">To the medical crew who stayed ready throughout the night — thank you.</p>
+      </div>
+    </section>
+
+    <section class="mad-light mad-photoessay mad-pad">
+      <div class="mad-wide"><p class="mad-kicker dark">ONE LAST LOOK</p><h2>NO MORE REPORTING.<br/>JUST THE NIGHT.</h2></div>
+      <div class="essay-grid">
+        <figure class="essay-a"><img src={img('gallery-flag.webp')} srcset={srcset('gallery-flag', { xl: true })} sizes="(min-width: 760px) 64vw, 100vw" width="1600" height="1066" alt="The chequered flag in the air at the start line" loading="lazy" decoding="async" /></figure>
+        <figure class="essay-b"><img src={img('gallery-grin.webp')} srcset={srcset('gallery-grin')} sizes="(min-width: 760px) 40vw, 100vw" width="1600" height="1066" alt="A rider grinning through a corner" loading="lazy" decoding="async" /></figure>
+        <figure class="essay-c"><img src={img('gallery-rider.webp')} srcset={srcset('gallery-rider')} sizes="(min-width: 760px) 40vw, 100vw" width="1600" height="1066" alt="A rider on a fixed-gear bike under the lights" loading="lazy" decoding="async" /></figure>
+        <figure class="essay-d"><img src={img('gallery-pack.webp')} srcset={srcset('gallery-pack', { xl: true })} sizes="(min-width: 760px) 64vw, 100vw" width="1600" height="1066" alt="A pack of riders sprinting past the barriers" loading="lazy" decoding="async" /></figure>
+      </div>
+    </section>
+
+    <section class="mad-dark mad-sponsors mad-pad">
+      <div class="mad-wide">
+        <p class="mad-kicker">SPONSORS &amp; PARTNERS</p>
+        <h2>THANK YOU FOR<br/>BACKING THE NIGHT.</h2>
+        <ul class="sponsor-grid">
+          {sponsors.map((s) => (
+            <li class={`sponsor ${s.kind}`}><img src={img(`sponsors/${s.file}`)} alt={s.name} width={s.width} height={s.height} loading="lazy" decoding="async" /></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="mad-closing">
+      <img src={img('closing.webp')} srcset={srcset('closing', { xl: true })} sizes="100vw" width="1600" height="1066" alt="Riders, volunteers, organisers and supporters together at the end of Metro Madness Vol.2" loading="lazy" decoding="async" />
+      <div class="mad-closing-shade"></div>
+      <div class="mad-closing-copy">
+        <p class="mad-kicker">00:30 / IYC CHERAS</p>
+        <h2>THIS<br/>WAS THE<br/>POINT.</h2>
+      </div>
+    </section>
+
+    <section class="mad-end mad-pad">
+      <div class="mad-wide">
+        <p class="mad-end-small">ONE LAP ENDS.</p>
+        <h2>WE KEEP<br/>MOVING.</h2>
+        <p>PEDAL &amp; CONNECT VOL.2<br/>METRO MADNESS! VOL.2</p>
+        <p class="mad-muted">MAYC BUKIT BINTANG × RIDEWILD KL<br/>26 SEPTEMBER 2026</p>
+        <a href="/" class="mad-end-link">WE MOVE. →</a>
+      </div>
+    </section>
+  </article>
+
+  <style>
+    .mad{--m-black:#0b0b0a;--m-ink:#11110f;--m-paper:#f1eee7;--m-yellow:#efb134;--m-blue:#1d4d7c;--m-muted:#aaa39a;background:var(--m-black);color:#fff;overflow:hidden}
+    .mad *{box-sizing:border-box}.mad img{width:100%;height:100%;object-fit:cover}.mad h1,.mad h2,.mad h3,.mad p{margin-top:0}.mad h2{font-size:clamp(3.3rem,10vw,8.5rem);line-height:.86;letter-spacing:-.055em;margin-bottom:1.5rem}.mad-pad{padding:clamp(4.5rem,10vw,10rem) max(20px,5vw)}.mad-wide{max-width:1240px;margin:0 auto}.mad-narrow{max-width:760px;margin:0 auto}.mad-kicker{font:500 11px/1.5 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:#c8c2b9;margin-bottom:1.5rem}.mad-kicker.dark{color:#6c675f}.mad-light{background:var(--m-paper);color:var(--m-ink)}.mad-dark{background:var(--m-black);color:#fff}.mad-muted{color:#b5afa6}.mad-muted-dark{color:#615c55;max-width:680px;font-size:1.1rem}.mad-photo{margin:0;overflow:hidden}.mad-photo.medium{width:min(1080px,90vw);margin:4rem auto 0}.mad-photo.full{width:min(1450px,96vw);margin:4rem auto 0}.mad-lead{font-size:clamp(1.25rem,2.4vw,2.1rem);line-height:1.45;letter-spacing:-.02em}.mad-lead.short{max-width:820px}.mad-statement{max-width:1240px;margin:clamp(4rem,10vw,9rem) auto 0;font-size:clamp(3rem,10vw,9rem);font-weight:800;line-height:.83;letter-spacing:-.06em}.mad-statement.dark{color:var(--m-ink)}
+
+    .mad-hero{position:relative;min-height:calc(100svh - 72px);display:grid;align-items:end;background:#000}.mad-hero>img{position:absolute;inset:0}.mad-hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.18) 45%,rgba(0,0,0,.82))}.mad-hero-copy{position:relative;z-index:2;padding:7vh max(20px,5vw);width:min(1280px,100%)}.mad-hero h1{font-size:clamp(5rem,18vw,14rem);line-height:.72;letter-spacing:-.07em;margin:0 0 2rem;font-weight:800}.mad-hero h1 span{display:block}.mad-sub{font-weight:800;letter-spacing:.02em;font-size:clamp(1rem,2vw,1.5rem)}.mad-scroll{font:500 10px/1.6 var(--f-mono);letter-spacing:.12em;color:#ddd6cd;display:flex;gap:1rem;justify-content:space-between;max-width:760px}.mad-intro{padding-top:8rem}.mad-sound h2{max-width:900px}.spotify-stack{display:grid;gap:12px;margin-top:2rem}.spotify-stack iframe{border-radius:12px}.sound-end{margin-top:1.5rem}
+
+    .mad-split{max-width:1240px;margin:0 auto;display:grid;gap:3rem}.mad-copyblock{align-self:center;font-size:clamp(1.05rem,1.6vw,1.3rem);line-height:1.65}.mad-copyblock blockquote{margin:2.5rem 0;font-size:clamp(2rem,4vw,4.8rem);font-weight:700;line-height:.98;letter-spacing:-.04em}.mad-by{font:700 13px/1.45 var(--f-mono);letter-spacing:.08em}.mad-by span{font-weight:400;color:#6f695f}.mad-by.light span{color:#aaa39a}.mad-go{max-width:1240px;margin:7rem auto 0;border-top:1px solid #cbc4b8;padding-top:1.3rem;display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--f-mono);font-size:12px}.mad-go strong{font-family:var(--f-utama);font-size:clamp(3rem,8vw,8rem);line-height:.8;letter-spacing:-.05em}
+
+    .mad-facts{display:flex;flex-wrap:wrap;gap:.5rem 2rem;font:500 11px/1.6 var(--f-mono);letter-spacing:.1em;color:#aaa39a}.mad-number{font-size:clamp(8rem,28vw,24rem);font-weight:800;line-height:.7;letter-spacing:-.08em;color:var(--m-yellow);margin-bottom:4rem}.mad-track h2{font-size:clamp(2.8rem,6vw,6.5rem)}.mad-track h2 span{color:#a7a099}.mad-two-line{font-size:clamp(1.5rem,3vw,3rem);line-height:1.05;font-weight:700;margin:4rem 0}.mad-race-grid{width:min(1450px,96vw);margin:0 auto;display:grid;gap:10px}.mad-race-grid .mad-photo{aspect-ratio:4/3}.mad-race-grid .wide-img{aspect-ratio:16/8}
+
+    .pedigree-grid{display:grid;gap:1px;background:#cfc8bc;border:1px solid #cfc8bc;margin-top:3rem}.pedigree-card{background:var(--m-paper);padding:2rem;min-height:300px;display:flex;flex-direction:column}.pedigree-no{font:500 11px var(--f-mono);color:#8b857c}.pedigree-card h3{font-size:clamp(1.6rem,3vw,2.6rem);line-height:.95;letter-spacing:-.04em;margin:4rem 0 1rem}.pedigree-card p{font-size:1rem;line-height:1.5;color:#514c45}.pedigree-card a{margin-top:auto;font:500 10px var(--f-mono);letter-spacing:.12em;text-decoration:underline;text-underline-offset:4px}.mad-photo-pair{width:min(1240px,92vw);margin:6rem auto 0;display:grid;gap:10px}.mad-photo-pair figure{margin:0;aspect-ratio:4/5;overflow:hidden}
+
+    .mad-loud{padding-top:5rem;padding-bottom:5rem}.mad-beats{display:flex;flex-direction:column;gap:1.5rem}.mad-beats span{font-size:clamp(4rem,12vw,11rem);font-weight:800;line-height:.78;letter-spacing:-.07em}.mad-beats span:nth-child(2){margin-left:8vw;color:var(--m-yellow)}.mad-beats span:nth-child(3){margin-left:2vw}.mad-beats span:nth-child(4){margin-left:12vw;color:#a7a099}.mad-women-row{max-width:1240px;margin:2rem auto 0;display:grid;gap:2rem;align-items:end}.mad-women-row .mad-statement{margin:0}.results-grid{display:grid;gap:12px;margin-top:3rem}.result-card{border:1px solid #312f2a;background:#11110f}.result-card h3{font:600 11px/1.4 var(--f-mono);letter-spacing:.12em;padding:1rem 1.2rem;border-bottom:1px solid #312f2a;color:var(--m-yellow);margin:0}.result-row{display:grid;grid-template-columns:70px 1fr;gap:1rem;padding:1.2rem;border-bottom:1px solid #27251f}.result-row:last-child{border-bottom:0}.result-row>b{font-size:2.4rem;line-height:1;color:#777168}.result-row div{display:flex;flex-direction:column;gap:.2rem}.result-row strong{font-size:1rem}.result-row span{font:400 11px var(--f-mono);color:#9e978d}.mad-link{display:inline-block;margin-top:2rem;font:600 11px var(--f-mono);letter-spacing:.12em;border-bottom:1px solid;padding-bottom:.35rem}.mad-ridewild blockquote{color:#fff}.mad-ridewild .mad-copyblock{color:#d7d0c7}.mad-ridewild .mad-copyblock h2{color:#fff}
+
+    .reverse .mad-photo{order:2}.reverse .mad-copyblock{order:1}.mad-bts{border-top:1px solid #d3ccc0}.mad-digital{background:#0b1320;color:#fff}.mad-digital h2{max-width:1050px}.mad-digital-copy{max-width:850px;font-size:clamp(1.35rem,2.6vw,2.4rem);line-height:1.35;letter-spacing:-.025em}.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#26384f;margin-top:4rem;border:1px solid #26384f}.metrics div{background:#0b1320;padding:2rem 1rem}.metrics b{display:block;font-size:clamp(3.5rem,8vw,7rem);line-height:.85;letter-spacing:-.055em}.metrics span{display:block;margin-top:.6rem;font:500 10px var(--f-mono);letter-spacing:.12em;color:#a7b0bd}.mad-data-note{max-width:700px;margin-top:2rem;color:#bdc5d0}.mad-favourite{background:var(--m-yellow);color:var(--m-ink)}.fav-grid{display:grid;gap:2rem;align-items:end}.fav-number{font-size:clamp(8rem,25vw,22rem);font-weight:800;line-height:.68;letter-spacing:-.08em}.fav-copy h2{font-size:clamp(3rem,7vw,6.5rem)}.fav-copy p,.fav-copy span{font:500 11px/1.5 var(--f-mono);letter-spacing:.1em;display:block}.fav-copy strong{display:block;font-size:clamp(2rem,4vw,4rem);margin:1.3rem 0 .5rem}.mad-safety p{font-size:clamp(1.15rem,2vw,1.7rem);line-height:1.5}.essay-grid{width:min(1450px,96vw);margin:4rem auto 0;display:grid;gap:12px}.essay-grid figure{margin:0;overflow:hidden;min-height:320px}.essay-a,.essay-d{aspect-ratio:16/9}.essay-b,.essay-c{aspect-ratio:4/5}.mad-closing{position:relative;min-height:92svh;background:#000}.mad-closing>img{position:absolute;inset:0}.mad-closing-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.68))}.mad-closing-copy{position:absolute;left:max(20px,5vw);right:max(20px,5vw);bottom:7vh}.mad-closing h2{font-size:clamp(5rem,18vw,15rem);margin:0}.mad-end{background:#090909;min-height:90svh;display:flex;align-items:center}.mad-end h2{font-size:clamp(6rem,18vw,15rem);margin:2rem 0}.mad-end-small{font:500 11px var(--f-mono);letter-spacing:.14em}.mad-end-link{display:inline-block;margin-top:4rem;font-size:clamp(2rem,5vw,4rem);font-weight:800;border-bottom:4px solid var(--m-yellow)}
+
+    @media(min-width:760px){.mad-split{grid-template-columns:1.05fr .95fr;align-items:center}.mad-race-grid{grid-template-columns:1fr 1fr}.mad-race-grid .wide-img{grid-column:1/-1}.pedigree-grid{grid-template-columns:repeat(2,1fr)}.mad-photo-pair{grid-template-columns:1fr 1.6fr}.mad-women-row{grid-template-columns:1.1fr .9fr}.results-grid{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:repeat(4,1fr)}.fav-grid{grid-template-columns:1fr 1fr}.essay-grid{grid-template-columns:1.2fr .8fr}.essay-a{grid-column:1/-1}.essay-d{grid-column:1/-1}}
+    @media(min-width:1050px){.mad-hero{min-height:calc(100svh - 88px)}.pedigree-grid{grid-template-columns:repeat(4,1fr)}.pedigree-card{min-height:360px}.essay-grid{grid-template-columns:1.2fr .8fr 1fr}.essay-a{grid-column:1/3}.essay-b{grid-column:3}.essay-c{grid-column:1}.essay-d{grid-column:2/4}.mad-split{gap:6rem}.mad-photo-pair figure:first-child{transform:translateY(5rem)} }
+    @media(max-width:759px){.mad-pad{padding-left:18px;padding-right:18px}.mad-hero-copy{padding-left:18px;padding-right:18px}.mad-hero h1{font-size:clamp(4.6rem,24vw,8rem)}.mad-scroll{display:block}.mad-scroll span{display:block;margin-top:.7rem}.mad-number{font-size:38vw}.mad-split .mad-photo{aspect-ratio:4/3}.reverse .mad-photo,.reverse .mad-copyblock{order:initial}.mad-copyblock blockquote{font-size:2.25rem}.mad-race-grid,.mad-photo-pair,.essay-grid{width:100%}.mad-photo-pair{grid-template-columns:1fr 1fr}.mad-photo-pair figure{aspect-ratio:3/4}.pedigree-card{min-height:250px}.pedigree-card h3{margin-top:2.5rem}.mad-beats span{font-size:18vw}.mad-closing{min-height:74svh}.mad-end{min-height:75svh}}
+    @media(prefers-reduced-motion:no-preference){.mad-hero>img{animation:madZoom 18s ease-out both}@keyframes madZoom{from{transform:scale(1)}to{transform:scale(1.045)}}}
+    @media(prefers-reduced-motion:reduce){.mad *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+    /* ---- fixes 2026-09-29 ---- */
+    /* wide photo rows: centre on the viewport instead of overflowing the right edge */
+    .mad .mad-photo.full,.mad .mad-race-grid,.mad .mad-photo-pair,.mad .essay-grid{margin-left:50%;transform:translateX(-50%)}
+    .mad .mad-photo-pair{width:min(1240px,90vw)}
+    /* soundtrack headline fits its column */
+    .mad-sound h2{font-size:clamp(3rem,9.5vw,7.6rem)}
+    /* medical kicker was picking up the body paragraph size */
+    .mad-safety .mad-kicker{font-size:11px;line-height:1.5}
+    /* long names and big numbers stay inside their columns */
+    .fav-grid>div{min-width:0}
+    .fav-copy h2{font-size:clamp(2.6rem,5.4vw,5.2rem);overflow-wrap:break-word}
+    .metrics div{min-width:0}
+    .metrics b{font-size:clamp(2.6rem,6vw,5.6rem)}
+    .pedigree-card h3{overflow-wrap:break-word}
+    /* photo essay: let aspect-ratio decide the height (min-height forced overflow on phones) */
+    .essay-grid figure{min-height:0}
+    @media (width>=1050px){
+      .pedigree-card h3{font-size:clamp(1.6rem,2.3vw,2.3rem)}
+    }
+    @media (width<=759px){
+      .mad-beats span{font-size:16vw}
+      .mad-beats span:nth-child(2){margin-left:5vw}
+      .mad-beats span:nth-child(4){margin-left:4vw}
+      .metrics div{padding:1.4rem .9rem}
+      .essay-grid{grid-template-columns:1fr 1fr;gap:8px}
+      .essay-a,.essay-d{grid-column:1/-1}
+    }
+
+    /* sponsors */
+    .mad-sponsors{border-top:1px solid #26241f}
+    .mad-sponsors h2{font-size:clamp(2.8rem,7vw,6.5rem)}
+    .sponsor-grid{list-style:none;margin:clamp(3rem,6vw,5rem) 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#26241f;border:1px solid #26241f}
+    .sponsor{background:var(--m-black);display:grid;place-items:center;min-height:150px;padding:1.6rem}
+    .mad .sponsor img{width:auto;height:auto;max-width:100%;object-fit:contain}
+    .sponsor.badge img{max-height:84px}
+    .sponsor.stack img{max-height:74px}
+    .sponsor.mark img{max-height:38px}
+    @media (width>=760px){.sponsor-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.sponsor{min-height:190px}.sponsor.badge img{max-height:100px}.sponsor.stack img{max-height:88px}.sponsor.mark img{max-height:44px}}
+    @media (width>=1050px){.sponsor-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+    /* sponsors: centred rows so an uneven count still looks balanced */
+    .sponsor-grid{display:flex;flex-wrap:wrap;justify-content:center;background:none;border:0;gap:0}
+    .sponsor{flex:0 0 50%;border:1px solid #26241f;margin:0 -1px -1px 0}
+    @media (width>=760px){.sponsor{flex-basis:25%}}
+    @media (width>=1050px){.sponsor{flex-basis:16.666%}}
+
+    /* the bigger point: Haikal Zaini statement (original Malay) */
+    .mad-haikal{max-width:1240px;margin:clamp(5rem,10vw,8rem) auto 0;border-top:1px solid #cbc4b8;padding-top:2rem;display:grid;gap:3rem}
+    .mad-haikal-context{max-width:640px;font-size:clamp(1.15rem,2vw,1.55rem);line-height:1.45;letter-spacing:-.015em}
+    .mad-reach{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1rem;margin:2.5rem 0 0}
+    .mad-reach strong{font-size:clamp(4.5rem,12vw,9.5rem);font-weight:800;line-height:.8;letter-spacing:-.07em}
+    .mad-reach b,.mad-reach span{font:500 11px/1.5 var(--f-mono);letter-spacing:.14em;color:#6c675f}
+    .mad-reach span{flex-basis:100%}
+    .mad-haikal-quote{margin:0 0 2rem;font-size:clamp(1.25rem,2.2vw,1.85rem);line-height:1.38;font-weight:600;letter-spacing:-.02em}
+    .mad-haikal-quote p{margin-bottom:1em}
+    .mad-haikal-quote p:last-child{margin-bottom:0}
+    @media (width>=1050px){.mad-haikal{grid-template-columns:.85fr 1.15fr;gap:6rem}}
+  </style>
+</Base>
