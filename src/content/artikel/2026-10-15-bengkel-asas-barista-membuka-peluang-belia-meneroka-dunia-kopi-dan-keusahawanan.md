@@ -7,17 +7,17 @@ author: Nurul Ain Asyiqin bt Mustafa & Nurul Balqis Binti Ramli
 cover: /uploads/whatsapp-image-2026-10-11-at-84737-pm-1.jpeg
 coverAlt: "Peserta dari MAYC Bukit Bintang menerima sijil penyertaan "
 galeri:
+  - /uploads/whatsapp-image-2026-10-11-at-84741-pm-1.jpeg
+  - /uploads/whatsapp-image-2026-10-11-at-84738-pm.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84742-pm-1.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84736-pm.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84737-pm.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84738-pm-1.jpeg
-  - /uploads/whatsapp-image-2026-10-11-at-84738-pm.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84739-pm-1.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84739-pm.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84740-pm-1.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84740-pm-2.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84740-pm.jpeg
-  - /uploads/whatsapp-image-2026-10-11-at-84741-pm-1.jpeg
   - /uploads/whatsapp-image-2026-10-11-at-84742-pm-1-1.jpeg
 featured: true
 draft: false
